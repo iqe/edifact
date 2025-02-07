@@ -1,21 +1,28 @@
 module Edifact
   # A segment or a segment group
   class MessageSpecificationNode
-    attr_reader :index, :parent, :segments, :elements
+    attr_reader :level, :index, :parent, :segments, :elements
     attr_reader :name, :min, :max
 
     attr_accessor :visits
 
     def initialize(parent, index, spec)
       @parent = parent
+      @level = parent ? parent.level + 1 : 0
       @index = index
       @name = spec[:name]
       @min = spec[:min] || 1
       @max = spec[:max] || 1
       @elements = spec[:elements] || []
 
-      if index == 0 && min == 0
-        raise "First element in a group cannot have min=0. We can't validate that kind of data structure."
+      # TreeBuilder requires the first element of a group to be min=1 max=1
+      if index == 0 && (min != 1 || max != 1)
+        raise "Invalid specification for #{@name}: First element of a group must be min=1 max=1 (got min=#{min} max=#{max})"
+      end
+
+      # TreeBuilder does not support groups as first element of a group (except for the root node)
+      if index == 0 && spec[:segments] && parent
+        raise "Invalid specification for #{@name}: First element of a group cannot be another group"
       end
 
       if spec[:segments]
@@ -47,6 +54,8 @@ module Edifact
       end
       res
     end
+
+    protected
 
     def next_sibling
       if parent.nil?
