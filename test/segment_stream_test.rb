@@ -41,10 +41,11 @@ class SegmenterTest < Minitest::Test
   end
 
   def test_unexpected_eof
-    assert_raises_msg(/Unexpected end of file/) { input("AAA+") }
-    assert_raises_msg(/Unexpected end of file/) { input("AAA+x") }
-    assert_raises_msg(/Unexpected end of file/) { input("AAA+x:") }
-    assert_raises_msg(/Unexpected end of file/) { input("AAA+x:y") }
+    assert_raises_msg(/Unexpected "<EOF>" .* 13/) { input("AAA") }
+    assert_raises_msg(/Unexpected "<EOF>" .* 14/) { input("AAA+") }
+    assert_raises_msg(/Unexpected "<EOF>" .* 15/) { input("AAA+x") }
+    assert_raises_msg(/Unexpected "<EOF>" .* 16/) { input("AAA+x:") }
+    assert_raises_msg(/Unexpected "<EOF>" .* 17/) { input("AAA+x:y") }
   end
 
   def test_unexpected_component_separator

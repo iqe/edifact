@@ -4,15 +4,19 @@ require_relative 'component'
 
 module Edifact
   class ParseError < StandardError
-    attr_reader :pos, :actual_token, :expected_tokens
+    attr_reader :pos, :actual, :expected
 
-    def initialize(actual_token, expected_tokens=[])
-      @pos = actual_token.pos
-      @actual_token = actual_token
-      @expected_tokens = expected_tokens
+    def initialize(pos, actual_value, expected_values=[])
+      @pos = pos
+      @actual = actual_value
+      @expected = expected_values
 
-      #super("Position #{@pos}: Expected one of #{@expected_tokens.inspect}, but got #{@actual_token}")
-      super("Unexpected \"#{@actual_token.value}\" at position #{@pos}")
+      message = "Unexpected #{@actual.inspect} at position #{@pos}."
+      if !expected_values.empty?
+        message += " Expected one of #{@expected_values.inspect}."
+      end
+
+      super(message)
     end
   end
 
@@ -53,10 +57,8 @@ module Edifact
           return segment
         when :element_separator
           segment << read_element
-        when :eof
-          raise "Unexpected end of file at position #{token.pos}"
-        else
-          raise ParseError.new(token, [@token_stream.segment_separator, @token_stream.element_separator])
+        else # includes :eof
+          raise ParseError.new(token.pos, token.value, [@token_stream.element_separator, @token_stream.segment_separator])
         end
       end
     end
@@ -96,7 +98,18 @@ module Edifact
       token = @peek_buf.shift
 
       if token.type != expected_type
-        raise ParseError.new(token, [expected_type]) # FIXME wrong usage of expected_type
+        expected = case expected_type
+          when :text
+            "<text>"
+          when :component_separator
+            @token_stream.component_separator
+          when :element_separator
+            @token_stream.element_separator
+          when :segment_separator
+            @token_stream.segment_separator
+          end
+
+        raise ParseError.new(token.pos, token.value, [expected])
       end
 
       token

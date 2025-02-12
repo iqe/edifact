@@ -130,7 +130,7 @@ module Edifact
     end
 
     def eof_token
-      Token.new(@token_pos, :eof, nil)
+      Token.new(@token_pos, :eof, "<EOF>")
     end
   end
 end
