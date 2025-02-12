@@ -50,11 +50,11 @@ module Edifact
             return text_token
           end
         when @segment_separator
-          return separator_token(:segment_separator)
+          return separator_token(:segment_separator, @segment_separator)
         when @element_separator
-          return separator_token(:element_separator)
+          return separator_token(:element_separator, @element_separator)
         when @component_separator
-          return separator_token(:component_separator)
+          return separator_token(:component_separator, @component_separator)
         when @escape_character
           @escape_char_count += 1
           read # consume escape character
@@ -102,11 +102,11 @@ module Edifact
       @peek_buf.shift
     end
 
-    def separator_token(delimiter_name)
+    def separator_token(delimiter_name, delimiter_value)
       if @text_buf.empty?
         read # consume delimiter
         @token_pos += 1
-        Token.new(@token_pos - 1, delimiter_name, nil)
+        Token.new(@token_pos - 1, delimiter_name, delimiter_value)
       else
         text_token
       end
