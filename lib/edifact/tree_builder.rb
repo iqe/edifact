@@ -13,14 +13,6 @@ module Edifact
       def <<(segment_node)
         @segments << segment_node
       end
-
-      # FIXME: Externalize this to a visitor-like class
-      def to_test_hash
-        {
-          name: @name,
-          segments: @segments.map(&:to_test_hash)
-        }
-      end
     end
 
     class SegmentNode
@@ -28,13 +20,6 @@ module Edifact
       def initialize(segment)
         @name = segment.name
         @elements = segment.elements
-      end
-
-      # FIXME: Externalize this to a visitor-like class
-      def to_test_hash
-        {
-          name: @name
-        }
       end
     end
 

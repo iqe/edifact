@@ -263,7 +263,7 @@ class TreeBuilderTest < Minitest::Test
     segments = Edifact::SegmentStream.new(Edifact::TokenStream.new(@input))
     builder = Edifact::TreeBuilder.new(segments, @tree_spec)
 
-    @tree = builder.tree.to_test_hash
+    @tree = to_test_hash(builder.tree)
   end
 
   def assert_tree(expected)
@@ -281,4 +281,20 @@ class TreeBuilderTest < Minitest::Test
       assert_equal message, error.message
     end
   end
+
+    def to_test_hash(node)
+      case node
+      when Edifact::TreeBuilder::GroupNode
+        {
+          name: node.name,
+          segments: node.segments.map {|s| to_test_hash(s)}
+        }
+      when Edifact::TreeBuilder::SegmentNode
+        {
+          name: node.name
+        }
+      else
+        nil
+      end
+    end
 end
