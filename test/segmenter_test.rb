@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SegmentParserTest < Minitest::Test
+class SegmenterTest < Minitest::Test
   def test_basic_segment
     input("ABC+Hel:lo+World++'")
     assert_equal [[10, "ABC", [14, [14, "Hel"], [18, "lo"]], [21, [21, "World"]], [27, [27, ""]], [28, [28, ""]]]], segments
@@ -74,7 +74,7 @@ class SegmentParserTest < Minitest::Test
 
   def input(s)
     input = "UNA:+.? '" + s
-    @parser = Edifact::SegmentParser.new
+    @parser = Edifact::Segmenter.new
     @segments = @parser.parse(StringIO.new(input))
   end
 

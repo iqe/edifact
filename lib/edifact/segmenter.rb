@@ -4,7 +4,7 @@ require_relative 'element'
 require_relative 'component'
 
 module Edifact
-  class SegmentParser
+  class Segmenter
     def initialize
       @callbacks = {
         segment: [],

@@ -249,7 +249,7 @@ class TreeBuilderTest < Minitest::Test
   def input(input)
     @input = StringIO.new("UNA:+.? '#{input}")
 
-    parser = Edifact::SegmentParser.new
+    parser = Edifact::Segmenter.new
     builder = Edifact::TreeBuilder.new(parser, @tree_spec)
 
     parser.parse(@input)
