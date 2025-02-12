@@ -53,7 +53,7 @@ class TreeBuilderTest < Minitest::Test
       ]
     })
 
-    assert_raises_msg('Position 14: Unexpected end of input. Expected one of ["DEF"]') { input("ABC'") }
+    assert_raises_msg('Unexpected end of input. Expected one of ["DEF"]') { input("ABC'") }
   end
 
   def test_optional_trailing_segment
@@ -260,10 +260,9 @@ class TreeBuilderTest < Minitest::Test
   def input(input)
     @input = StringIO.new("UNA:+.? '#{input}")
 
-    parser = Edifact::Segmenter.new
-    builder = Edifact::TreeBuilder.new(parser, @tree_spec)
+    segments = Edifact::SegmentStream.new(Edifact::Tokenizer.new(@input))
+    builder = Edifact::TreeBuilder.new(segments, @tree_spec)
 
-    parser.parse(@input)
     @tree = builder.tree.to_test_hash
   end
 

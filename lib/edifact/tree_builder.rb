@@ -37,10 +37,8 @@ module Edifact
       end
     end
 
-    attr_reader :tree
-
-    def initialize(parser, message_specification)
-      @parser = parser
+    def initialize(segment_stream, message_specification)
+      @segment_stream = segment_stream
 
       # intialization for on_segment
       # FIXME @spec gets changed during on_segment. We cannot use an instance of TreeBuilder for multiple messages.
@@ -50,14 +48,18 @@ module Edifact
       @spec_nodes = @spec_root_node.next
 
       @group_node_stack = []
+    end
 
-      @parser.on(:segment) do |segment|
-        on_segment(segment)
-      end
+    def tree
+      if @tree.nil?
+        segment = nil
+        while segment = @segment_stream.read
+          on_segment(segment)
+        end
 
-      @parser.on(:eof) do |position|
-        on_eof(position)
+        on_eof
       end
+      @tree
     end
 
     private
@@ -103,10 +105,10 @@ module Edifact
       raise "Position #{segment.pos}: Invalid segment #{segment.name.inspect}. Expected one of #{@spec_nodes.map(&:name).inspect}"
     end
 
-    def on_eof(position)
+    def on_eof
       # Check if the spec requires more segments
       if @spec_nodes.any? {|node| node.min > node.visits}
-        raise "Position #{position}: Unexpected end of input. Expected one of #{@spec_nodes.map(&:name).inspect}"
+        raise "Unexpected end of input. Expected one of #{@spec_nodes.map(&:name).inspect}"
       end
 
       # # Sanity check
