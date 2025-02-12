@@ -92,6 +92,8 @@ module Edifact
           @group_node_stack.last << SegmentNode.new(segment)
           spec_node.visits += 1
 
+          ElementValidator.new.validate_elements(spec_node, segment)
+
           @spec_nodes = spec_node.next
 
           return

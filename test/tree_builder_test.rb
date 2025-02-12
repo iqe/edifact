@@ -240,6 +240,17 @@ class TreeBuilderTest < Minitest::Test
     })
   end
 
+  def test_element_validation_is_triggered
+    definition({
+      name: "MSG",
+      segments: [
+        { name: "ABC", elements: [["1234"]] }
+      ]
+    })
+
+    assert_raises_msg('Position 14: Invalid value "hello". Expected "1234"') { input("ABC+hello'") }
+  end
+
   private
 
   def definition(tree_spec)
