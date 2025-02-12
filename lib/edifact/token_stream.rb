@@ -6,10 +6,10 @@ module Edifact
     end
   end
 
-  # Tokenizer creates a stream of tokens from an EDIFACT input stream.
+  # TokenStream creates a stream of tokens from an EDIFACT input stream.
   #
   # It is also responsible for handling escape characters. The resulting text tokens will have escape characters removed.
-  class Tokenizer
+  class TokenStream
     attr_reader :element_separator, :component_separator, :escape_character, :segment_separator
 
     def initialize(input)
@@ -78,7 +78,7 @@ module Edifact
 
     def parse_una_header
       if @input.nil?
-        raise "Tokenizer input must not be nil"
+        raise "TokenStream input must not be nil"
       end
 
       # UNA:+.? '

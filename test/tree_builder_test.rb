@@ -260,7 +260,7 @@ class TreeBuilderTest < Minitest::Test
   def input(input)
     @input = StringIO.new("UNA:+.? '#{input}")
 
-    segments = Edifact::SegmentStream.new(Edifact::Tokenizer.new(@input))
+    segments = Edifact::SegmentStream.new(Edifact::TokenStream.new(@input))
     builder = Edifact::TreeBuilder.new(segments, @tree_spec)
 
     @tree = builder.tree.to_test_hash

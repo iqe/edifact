@@ -1,9 +1,9 @@
 require 'test_helper'
 
-class TokenizerTest < Minitest::Test
+class TokenStreamTest < Minitest::Test
   def test_nil_input
     error = assert_raises do
-      Edifact::Tokenizer.new(nil)
+      Edifact::TokenStream.new(nil)
     end
     assert_match(/nil/, error.message)
   end
@@ -18,10 +18,10 @@ class TokenizerTest < Minitest::Test
   def test_una_header_parsing
     raw_msg("UNA1234 6")
 
-    assert_equal "1", @tokenizer.component_separator
-    assert_equal "2", @tokenizer.element_separator
-    assert_equal "4", @tokenizer.escape_character
-    assert_equal "6", @tokenizer.segment_separator
+    assert_equal "1", @token_stream.component_separator
+    assert_equal "2", @token_stream.element_separator
+    assert_equal "4", @token_stream.escape_character
+    assert_equal "6", @token_stream.segment_separator
   end
 
   def test_empty_element
@@ -75,7 +75,7 @@ class TokenizerTest < Minitest::Test
   private
 
   def raw_msg(input)
-    @tokenizer = Edifact::Tokenizer.new(StringIO.new(input))
+    @token_stream = Edifact::TokenStream.new(StringIO.new(input))
   end
 
   def msg(edifact_msg)
@@ -83,6 +83,6 @@ class TokenizerTest < Minitest::Test
   end
 
   def tokens
-    @tokenizer.read_remaining.map {|t| t.type == :text ? [t.pos, t.type, t.value] : [t.pos, t.type]}
+    @token_stream.read_remaining.map {|t| t.type == :text ? [t.pos, t.type, t.value] : [t.pos, t.type]}
   end
 end
