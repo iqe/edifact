@@ -31,7 +31,7 @@ module Edifact
 
       prev_token = nil
       tokenizer = Edifact::Tokenizer.new(input)
-      tokenizer.each do |token|
+      tokenizer.read_remaining.each do |token|
         case token.type
           when :segment_separator
             case mode

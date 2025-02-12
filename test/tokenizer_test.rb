@@ -83,6 +83,6 @@ class TokenizerTest < Minitest::Test
   end
 
   def tokens
-    @tokenizer.to_a.map {|t| t.type == :text ? [t.pos, t.type, t.value] : [t.pos, t.type]}
+    @tokenizer.read_remaining.map {|t| t.type == :text ? [t.pos, t.type, t.value] : [t.pos, t.type]}
   end
 end
