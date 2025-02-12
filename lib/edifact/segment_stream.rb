@@ -1,3 +1,7 @@
+require_relative 'segment'
+require_relative 'element'
+require_relative 'component'
+
 module Edifact
   class ParseError < StandardError
     attr_reader :pos, :actual_token, :expected_tokens
@@ -13,8 +17,8 @@ module Edifact
   end
 
   class SegmentStream
-    def initialize(tokens)
-      @tokens = tokens
+    def initialize(token_stream)
+      @token_stream = token_stream
       @peek_buf = []
     end
 
@@ -52,7 +56,7 @@ module Edifact
         when :eof
           raise "Unexpected end of file at position #{token.pos}"
         else
-          raise ParseError.new(token, [@tokens.segment_separator, @tokens.element_separator])
+          raise ParseError.new(token, [@token_stream.segment_separator, @token_stream.element_separator])
         end
       end
     end
@@ -100,7 +104,7 @@ module Edifact
 
     def peek_token
       if @peek_buf.empty?
-        @peek_buf << @tokens.read
+        @peek_buf << @token_stream.read
       end
       @peek_buf.last
     end

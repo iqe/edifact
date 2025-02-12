@@ -74,9 +74,8 @@ class SegmenterTest < Minitest::Test
 
   def input(s)
     input = "UNA:+.? '" + s
-    @parser = Edifact::Segmenter.new
-    s = Edifact::SegmentStream.new(Edifact::Tokenizer.new(StringIO.new(input)))
-    @segments = s.read_remaining
+    stream = Edifact::SegmentStream.new(Edifact::Tokenizer.new(StringIO.new(input)))
+    @segments = stream.read_remaining
   end
 
   def segments
