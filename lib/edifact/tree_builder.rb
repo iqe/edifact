@@ -1,3 +1,5 @@
+require_relative 'message_specification_node'
+
 module Edifact
   class TreeBuilder
     class GroupNode
