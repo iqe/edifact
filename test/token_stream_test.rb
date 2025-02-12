@@ -53,7 +53,7 @@ class TokenStreamTest < Minitest::Test
       msg("ABC+?")
       tokens # trigger tokenization
     end
-    assert_match(/end of input.*escape character/, error.message)
+    assert_match(/Unexpected end of input .* 15/, error.message)
   end
 
   def test_binary_text_gets_passed_through

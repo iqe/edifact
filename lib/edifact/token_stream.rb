@@ -1,3 +1,5 @@
+require_relative 'errors'
+
 module Edifact
   class Token
     attr_reader :pos, :type, :value
@@ -67,7 +69,7 @@ module Edifact
 
           c = peek_byte
           if c.nil?
-            raise "Unexpected end of input after escape character"
+            raise UnexpectedEndOfInputError.new(@token_pos + 1)
           end
           @text_buf << read_byte
         else
@@ -77,10 +79,6 @@ module Edifact
     end
 
     def parse_una_header
-      if @input.nil?
-        raise "TokenStream input must not be nil"
-      end
-
       # UNA:+.? '
       una = @input.read(9)
       @token_pos += 9
@@ -90,7 +88,7 @@ module Edifact
         @escape_character = una[6]
         @segment_separator = una[8]
       else
-        raise "Invalid or missing UNA header (got '#{una}')"
+        raise InvalidUnaHeaderError.new(una)
       end
     end
 
@@ -130,7 +128,7 @@ module Edifact
     end
 
     def eof_token
-      Token.new(@token_pos, :eof, "<EOF>")
+      Token.new(@token_pos, :eof)
     end
   end
 end

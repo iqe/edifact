@@ -1,35 +1,25 @@
 require_relative 'segment'
 require_relative 'element'
 require_relative 'component'
+require_relative 'errors'
 
 module Edifact
-  class ParseError < StandardError
-    attr_reader :pos, :actual, :expected
-
-    def initialize(pos, actual_value, expected_values=[])
-      @pos = pos
-      @actual = actual_value
-      @expected = expected_values
-
-      message = "Unexpected #{@actual.inspect} at position #{@pos}."
-      if !expected_values.empty?
-        message += " Expected one of #{@expected_values.inspect}."
-      end
-
-      super(message)
-    end
-  end
-
+  # SegmentStream creates a stream of segments from a TokenStream.
   class SegmentStream
     def initialize(token_stream)
       @token_stream = token_stream
       @peek_buf = []
     end
 
+    # Read the next complete segment from the stream.
+    #
+    # Returns nil if the end of the stream is reached.
+    # Raises ParseError if the segment is incomplete or invalid.
     def read
       read_segment
     end
 
+    # Read all remaining segments from the stream.
     def read_remaining
       segments = []
       while segment = read
@@ -57,8 +47,10 @@ module Edifact
           return segment
         when :element_separator
           segment << read_element
-        else # includes :eof
-          raise ParseError.new(token.pos, token.value, [@token_stream.element_separator, @token_stream.segment_separator])
+        when :eof
+          raise UnexpectedEndOfInputError.new(token.pos)
+        else
+          raise UnexpectedTokenError.new(token, [@token_stream.element_separator, @token_stream.segment_separator])
         end
       end
     end
@@ -109,7 +101,7 @@ module Edifact
             @token_stream.segment_separator
           end
 
-        raise ParseError.new(token.pos, token.value, [expected])
+        raise UnexpectedTokenError.new(token, [expected])
       end
 
       token

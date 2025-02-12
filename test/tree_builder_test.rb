@@ -27,7 +27,7 @@ class TreeBuilderTest < Minitest::Test
       ]
     })
 
-    assert_raises_msg('Position 10: Invalid segment "DEF". Expected one of ["ABC"]') { input("DEF'") }
+    assert_raises_msg('Invalid segment "DEF" at position 10. Expected one of ["ABC"]') { input("DEF'") }
   end
 
   def test_multiple_possible_segments

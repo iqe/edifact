@@ -1,3 +1,4 @@
+require_relative 'errors'
 require_relative 'message_specification_node'
 
 module Edifact
@@ -102,13 +103,13 @@ module Edifact
         end
       end
 
-      raise "Position #{segment.pos}: Invalid segment #{segment.name.inspect}. Expected one of #{@spec_nodes.map(&:name).inspect}"
+      raise ParseError.new(segment.pos, "Invalid segment #{segment.name.inspect} at position #{segment.pos}. Expected one of #{@spec_nodes.map(&:name).inspect}")
     end
 
     def on_eof
       # Check if the spec requires more segments
       if @spec_nodes.any? {|node| node.min > node.visits}
-        raise "Unexpected end of input. Expected one of #{@spec_nodes.map(&:name).inspect}"
+        raise ParseError.new(-1, "Unexpected end of input. Expected one of #{@spec_nodes.map(&:name).inspect}") # FIXME: Position
       end
 
       # # Sanity check
