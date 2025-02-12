@@ -38,7 +38,7 @@ module Edifact
 
     def read_segment
       token = peek_token
-      if token.nil? || token.type == :eof # TokenStream returns :eof instead of nil at end of input
+      if token.type == :eof
         return nil
       end
 
