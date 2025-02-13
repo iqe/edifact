@@ -284,7 +284,7 @@ class SegmentTreeTest < Minitest::Test
 
     def to_test_hash(node)
       case node
-      when Edifact::SegmentTree::GroupNode
+      when Edifact::SegmentGroup
         {
           name: node.name,
           segments: node.segments.map {|s| to_test_hash(s)}

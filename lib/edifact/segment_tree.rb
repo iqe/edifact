@@ -1,4 +1,5 @@
 require_relative 'errors'
+require_relative 'segment_group'
 require_relative 'message_specification_node'
 require_relative 'validation/segment_spec'
 
@@ -8,18 +9,6 @@ module Edifact
   # The tree is built according to a message specification.
   # The tree structure and all segments' elements are validated against the specification.
   class SegmentTree
-    class GroupNode
-      attr_reader :name, :segments
-      def initialize(name)
-        @name = name
-        @segments = []
-      end
-
-      def pos
-        @segments.first ? @segments.first.pos : -1
-      end
-    end
-
     def initialize(segment_stream, message_specification)
       @segment_stream = segment_stream
 
@@ -60,7 +49,7 @@ module Edifact
               @group_node_stack.pop
             end
 
-            new_group_node = GroupNode.new(spec_node.parent.name)
+            new_group_node = SegmentGroup.new(spec_node.parent.name)
 
             if @group_node_stack.empty?
               @tree = new_group_node
