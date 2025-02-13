@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class SegmenterTest < Minitest::Test
+  include TestHelper
+
   def test_basic_segment
     input("ABC+Hel:lo+World++'")
     assert_equal [[10, "ABC", [14, [14, "Hel"], [18, "lo"]], [21, [21, "World"]], [27, [27, ""]], [28, [28, ""]]]], segments
@@ -66,16 +68,8 @@ class SegmenterTest < Minitest::Test
 
   private
 
-  def assert_raises_msg(message)
-    error = assert_raises do
-      yield
-    end
-    assert_match message, error.message
-  end
-
   def input(s)
-    input = "UNA:+.? '" + s
-    stream = Edifact::SegmentStream.new(Edifact::TokenStream.new(StringIO.new(input)))
+    stream = Edifact::SegmentStream.new(Edifact::TokenStream.new(StringIO.new("UNA:+.? '#{s}")))
     @segments = stream.read_remaining
   end
 

@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class SegmentTreeTest < Minitest::Test
+  include TestHelper
+
   def test_single_element_tree
     definition({
       name: "MSG",
@@ -268,18 +270,6 @@ class SegmentTreeTest < Minitest::Test
 
   def assert_tree(expected)
     assert_equal expected, @tree
-  end
-
-  def assert_raises_msg(message)
-    error = assert_raises do
-      yield
-    end
-
-    if message.is_a?(Regexp)
-      assert_match message, error.message
-    else
-      assert_equal message, error.message
-    end
   end
 
   def to_test_hash(node)
