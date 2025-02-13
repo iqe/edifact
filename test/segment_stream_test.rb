@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SegmenterTest < Minitest::Test
+class SegmentStreamTest < Minitest::Test
   include TestHelper
 
   def test_basic_segment
