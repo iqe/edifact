@@ -1,6 +1,6 @@
-require_relative 'segment'
-require_relative 'element'
-require_relative 'component'
+require_relative 'nodes/segment'
+require_relative 'nodes/element'
+require_relative 'nodes/component'
 require_relative 'errors'
 
 module Edifact
@@ -37,7 +37,7 @@ module Edifact
       end
 
       token = read_token(:text)
-      segment = Segment.new(token.pos, token.value)
+      segment = Nodes::Segment.new(token.pos, token.value)
 
       loop do
         token = peek_token
@@ -57,7 +57,7 @@ module Edifact
 
     def read_element
       element_separator = read_token(:element_separator)
-      element = Element.new(element_separator.pos + 1) # +1 to skip the element separator
+      element = Nodes::Element.new(element_separator.pos + 1) # +1 to skip the element separator
 
       prev_token = element_separator
       loop do
@@ -65,15 +65,15 @@ module Edifact
         case token.type
         when :text
           text = read_token(:text)
-          element << Component.new(text.pos, text.value)
+          element << Nodes::Component.new(text.pos, text.value)
         when :component_separator
           if prev_token.type == :component_separator || prev_token.type == :element_separator
-            element << Component.new(token.pos, "")
+            element << Nodes::Component.new(token.pos, "")
           end
           read_token(:component_separator)
         else
           if prev_token.type == :component_separator || prev_token.type == :element_separator
-            element << Component.new(token.pos, "")
+            element << Nodes::Component.new(token.pos, "")
           end
           break
         end

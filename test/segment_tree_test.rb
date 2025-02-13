@@ -282,19 +282,19 @@ class SegmentTreeTest < Minitest::Test
     end
   end
 
-    def to_test_hash(node)
-      case node
-      when Edifact::SegmentGroup
-        {
-          name: node.name,
-          segments: node.segments.map {|s| to_test_hash(s)}
-        }
-      when Edifact::Segment
-        {
-          name: node.name
-        }
-      else
-        nil
-      end
+  def to_test_hash(node)
+    case node
+    when Edifact::Nodes::SegmentGroup
+      {
+        name: node.name,
+        segments: node.segments.map {|s| to_test_hash(s)}
+      }
+    when Edifact::Nodes::Segment
+      {
+        name: node.name
+      }
+    else
+      nil
     end
+  end
 end

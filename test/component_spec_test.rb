@@ -71,19 +71,12 @@ class ComponentSpecTest < Minitest::Test
   private
 
   def assert_valid(component_spec, component_value)
-    element = Edifact::Element.new(0)
-    element << Edifact::Component.new(0, component_value)
-
-    Edifact::Validation::ComponentSpec.new(component_spec).validate(Edifact::Component.new(0, component_value))
+    Edifact::Validation::ComponentSpec.new(component_spec).validate(Edifact::Nodes::Component.new(0, component_value))
   end
 
   def assert_invalid(component_spec, component_value)
-
-    element = Edifact::Element.new(0)
-    element << Edifact::Component.new(0, component_value)
-
     begin
-      Edifact::Validation::ComponentSpec.new(component_spec).validate(Edifact::Component.new(0, component_value))
+      Edifact::Validation::ComponentSpec.new(component_spec).validate(Edifact::Nodes::Component.new(0, component_value))
       fail "Expected Edifact::ValidationError for spec #{component_spec.inspect} and value #{component_value.inspect}"
     rescue Edifact::ValidationError
       # ok

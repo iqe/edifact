@@ -1,5 +1,5 @@
 require_relative 'errors'
-require_relative 'segment_group'
+require_relative 'nodes/segment_group'
 require_relative 'validation/segment_spec'
 
 module Edifact
@@ -127,7 +127,7 @@ module Edifact
               @group_node_stack.pop
             end
 
-            new_group_node = SegmentGroup.new(spec_node.parent.name)
+            new_group_node = Nodes::SegmentGroup.new(spec_node.parent.name)
 
             if @group_node_stack.empty?
               @tree = new_group_node

@@ -1,4 +1,4 @@
-module Edifact
+module Edifact::Nodes
   class Element
     attr_reader :pos, :components
     def initialize(pos)
