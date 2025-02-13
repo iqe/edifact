@@ -13,7 +13,7 @@ module Edifact::Validation
 
     def validate(component)
       unless @validator.valid?(component)
-        raise Edifact::ParseError.new(component.pos, "Position #{component.pos}: Invalid value \"#{component.text}\". Expected \"#{@specification}\"")
+        raise Edifact::ParseError.new(component.pos, "Position #{component.pos}: Invalid value #{component.text.inspect}. Expected #{@specification.inspect}")
       end
     end
 
