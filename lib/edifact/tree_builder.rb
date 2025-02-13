@@ -10,16 +10,30 @@ module Edifact
         @segments = []
       end
 
+      def pos
+        @segments.first ? @segments.first.pos : -1
+      end
+
       def <<(segment_node)
         @segments << segment_node
       end
     end
 
     class SegmentNode
-      attr_reader :name, :elements
       def initialize(segment)
-        @name = segment.name
-        @elements = segment.elements
+        @segment = segment
+      end
+
+      def pos
+        @segment.pos
+      end
+
+      def name
+        @segment.name
+      end
+
+      def elements
+        @segment.elements
       end
     end
 
