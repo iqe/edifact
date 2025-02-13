@@ -10,6 +10,10 @@ module Edifact::Nodes
       @segments.first ? @segments.first.pos : -1
     end
 
+    def <<(segment)
+      @segments << segment
+    end
+
     def to_edifact
       @segments.map(&:to_edifact).join
     end

@@ -53,7 +53,7 @@ module Edifact
             if @segment_group_stack.empty?
               @tree = segment_group
             else
-              @segment_group_stack.last.segments << segment_group
+              @segment_group_stack.last << segment_group
             end
             @segment_group_stack << segment_group
 
@@ -61,7 +61,7 @@ module Edifact
             spec_node.parent.segments.each {|s| s.visits = 0} # this only works because the first node in a group is required to have min=1 max=1
           end
 
-          @segment_group_stack.last.segments << segment
+          @segment_group_stack.last << segment
           spec_node.visits += 1
 
           spec_node.validate(segment) # raises ParseError if segment is invalid
