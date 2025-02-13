@@ -96,7 +96,7 @@ module Edifact
       @group_node = nil
       @spec_nodes = @spec_root_node.next
 
-      @group_node_stack = []
+      @segment_group_stack = []
     end
 
     def root
@@ -117,30 +117,30 @@ module Edifact
       @spec_nodes.each do |spec_node|
         if segment.name == spec_node.name
 
-          until @group_node_stack.size <= spec_node.level
-            @group_node_stack.pop
+          until @segment_group_stack.size <= spec_node.level
+            @segment_group_stack.pop
           end
 
           if spec_node.index == 0
 
-            until @group_node_stack.size < spec_node.level
-              @group_node_stack.pop
+            until @segment_group_stack.size < spec_node.level
+              @segment_group_stack.pop
             end
 
-            new_group_node = Nodes::SegmentGroup.new(spec_node.parent.name)
+            segment_group = Nodes::SegmentGroup.new(spec_node.parent.name)
 
-            if @group_node_stack.empty?
-              @tree = new_group_node
+            if @segment_group_stack.empty?
+              @tree = segment_group
             else
-              @group_node_stack.last.segments << new_group_node
+              @segment_group_stack.last.segments << segment_group
             end
-            @group_node_stack << new_group_node
+            @segment_group_stack << segment_group
 
             spec_node.parent.visits += 1
             spec_node.parent.segments.each {|s| s.visits = 0} # this only works because the first node in a group is required to have min=1 max=1
           end
 
-          @group_node_stack.last.segments << segment
+          @segment_group_stack.last.segments << segment
           spec_node.visits += 1
 
           Validation::SegmentSpec.new(spec_node).validate(segment)
@@ -161,8 +161,8 @@ module Edifact
       end
 
       # # Sanity check
-      # if @group_node_stack.size != 1
-      #   raise "Position #{position}: Unexpected end of input. Expected more segments. Group Node Stack: #{@group_node_stack.map(&:name).inspect}"
+      # if @segment_group_stack.size != 1
+      #   raise "Position #{position}: Unexpected end of input. Expected more segments. Group Node Stack: #{@segment_group_stack.map(&:name).inspect}"
       # end
     end
   end
