@@ -35,4 +35,10 @@ module Edifact
       super(token.pos, message)
     end
   end
+
+  class ValidationError < ParseError
+    def initialize(component_spec, component)
+      super(component.pos, "Position #{component.pos}: Invalid value \"#{component.text}\". Expected \"#{component_spec}\"")
+    end
+  end
 end

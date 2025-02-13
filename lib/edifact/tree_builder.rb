@@ -1,5 +1,6 @@
 require_relative 'errors'
 require_relative 'message_specification_node'
+require_relative 'validation/segment_spec'
 
 module Edifact
   class TreeBuilder
@@ -94,7 +95,7 @@ module Edifact
           @group_node_stack.last << SegmentNode.new(segment)
           spec_node.visits += 1
 
-          ElementValidator.new.validate_elements(spec_node, segment)
+          Validation::SegmentSpec.new(spec_node).validate(segment)
 
           @spec_nodes = spec_node.next
 

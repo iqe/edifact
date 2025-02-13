@@ -1,6 +1,7 @@
 require 'test_helper'
+require 'edifact/validation/component_spec'
 
-class ElementValidatorTest < Minitest::Test
+class ComponentSpecTest < Minitest::Test
   def test_literal_string
     assert_valid("a", "a")
     assert_invalid("a", "b")
@@ -73,7 +74,7 @@ class ElementValidatorTest < Minitest::Test
     element = Edifact::Element.new(0)
     element << Edifact::Component.new(0, component_value)
 
-    Edifact::ElementValidator.new.validate_components([component_spec], element)
+    Edifact::Validation::ComponentSpec.new(component_spec).validate(Edifact::Component.new(0, component_value))
   end
 
   def assert_invalid(component_spec, component_value)
@@ -82,7 +83,7 @@ class ElementValidatorTest < Minitest::Test
     element << Edifact::Component.new(0, component_value)
 
     begin
-      Edifact::ElementValidator.new.validate_components([component_spec], element)
+      Edifact::Validation::ComponentSpec.new(component_spec).validate(Edifact::Component.new(0, component_value))
       fail "Expected Edifact::ValidationError for spec #{component_spec.inspect} and value #{component_value.inspect}"
     rescue Edifact::ValidationError
       # ok
