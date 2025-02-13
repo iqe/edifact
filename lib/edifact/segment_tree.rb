@@ -8,8 +8,11 @@ module Edifact
   # The tree is built according to a message specification.
   # The tree structure and all segments' elements are validated against the specification.
   class SegmentTree
-    def initialize(segment_stream, message_specification)
-      @segment_stream = segment_stream
+    # Create a new SegmentTree from a stream of segments and a message specification.
+    #
+    # segments can be a SegmentStream or an array of Segment objects.
+    def initialize(segments, message_specification)
+      @segments = segments
 
       # intialization for on_segment
       @spec_root_node = SpecificationNode.new(nil, 0, message_specification)
@@ -22,9 +25,15 @@ module Edifact
 
     def root
       if @tree.nil?
-        segment = nil
-        while segment = @segment_stream.read
-          on_segment(segment)
+        if @segments.is_a?(SegmentStream)
+          segment = nil
+          while segment = @segments.read
+            on_segment(segment)
+          end
+        else
+          @segments.each do |segment|
+            on_segment(segment)
+          end
         end
 
         on_eof

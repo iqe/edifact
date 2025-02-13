@@ -253,6 +253,32 @@ class SegmentTreeTest < Minitest::Test
     assert_raises_msg('Position 14: Invalid value "hello". Expected "1234"') { input("ABC+hello'") }
   end
 
+  def test_reading_from_array_of_segments
+    definition({
+      name: "MSG",
+      segments: [
+        { name: "ABC" },
+        { name: "DEF" },
+      ]
+    })
+
+    segments = [
+      Edifact::Nodes::Segment.new(0, "ABC", elements: [Edifact::Nodes::Element.new(0, "1234")]),
+      Edifact::Nodes::Segment.new(0, "DEF"),
+    ]
+
+    segment_tree = Edifact::SegmentTree.new(segments, @tree_spec)
+    @tree = to_test_hash(segment_tree.root)
+
+    assert_tree({
+      name: "MSG",
+      segments: [
+        { name: "ABC" },
+        { name: "DEF" },
+      ]
+    })
+  end
+
   private
 
   def definition(tree_spec)
