@@ -289,7 +289,7 @@ class SegmentTreeTest < Minitest::Test
           name: node.name,
           segments: node.segments.map {|s| to_test_hash(s)}
         }
-      when Edifact::SegmentTree::SegmentNode
+      when Edifact::Segment
         {
           name: node.name
         }

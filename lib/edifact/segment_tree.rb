@@ -20,24 +20,6 @@ module Edifact
       end
     end
 
-    class SegmentNode
-      def initialize(segment)
-        @segment = segment
-      end
-
-      def pos
-        @segment.pos
-      end
-
-      def name
-        @segment.name
-      end
-
-      def elements
-        @segment.elements
-      end
-    end
-
     def initialize(segment_stream, message_specification)
       @segment_stream = segment_stream
 
@@ -91,7 +73,7 @@ module Edifact
             spec_node.parent.segments.each {|s| s.visits = 0} # this only works because the first node in a group is required to have min=1 max=1
           end
 
-          @group_node_stack.last.segments << SegmentNode.new(segment)
+          @group_node_stack.last.segments << segment
           spec_node.visits += 1
 
           Validation::SegmentSpec.new(spec_node).validate(segment)
