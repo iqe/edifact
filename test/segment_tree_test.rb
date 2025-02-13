@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TreeBuilderTest < Minitest::Test
+class SegmentTreeTest < Minitest::Test
   def test_single_element_tree
     definition({
       name: "MSG",
@@ -261,9 +261,9 @@ class TreeBuilderTest < Minitest::Test
     @input = StringIO.new("UNA:+.? '#{input}")
 
     segments = Edifact::SegmentStream.new(Edifact::TokenStream.new(@input))
-    builder = Edifact::TreeBuilder.new(segments, @tree_spec)
+    segment_tree = Edifact::SegmentTree.new(segments, @tree_spec)
 
-    @tree = to_test_hash(builder.tree)
+    @tree = to_test_hash(segment_tree.root)
   end
 
   def assert_tree(expected)
@@ -284,12 +284,12 @@ class TreeBuilderTest < Minitest::Test
 
     def to_test_hash(node)
       case node
-      when Edifact::TreeBuilder::GroupNode
+      when Edifact::SegmentTree::GroupNode
         {
           name: node.name,
           segments: node.segments.map {|s| to_test_hash(s)}
         }
-      when Edifact::TreeBuilder::SegmentNode
+      when Edifact::SegmentTree::SegmentNode
         {
           name: node.name
         }

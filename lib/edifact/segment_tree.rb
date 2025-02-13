@@ -3,7 +3,11 @@ require_relative 'message_specification_node'
 require_relative 'validation/segment_spec'
 
 module Edifact
-  class TreeBuilder
+  # SegmentTree creates a tree structure from a stream of segments.
+  #
+  # The tree is built according to a message specification.
+  # The tree structure and all segments' elements are validated against the specification.
+  class SegmentTree
     class GroupNode
       attr_reader :name, :segments
       def initialize(name)
@@ -13,10 +17,6 @@ module Edifact
 
       def pos
         @segments.first ? @segments.first.pos : -1
-      end
-
-      def <<(segment_node)
-        @segments << segment_node
       end
     end
 
@@ -42,16 +42,15 @@ module Edifact
       @segment_stream = segment_stream
 
       # intialization for on_segment
-      # FIXME @spec gets changed during on_segment. We cannot use an instance of TreeBuilder for multiple messages.
       @spec_root_node = MessageSpecificationNode.new(nil, 0, message_specification)
-      @tree =  nil
+      @tree = nil
       @group_node = nil
       @spec_nodes = @spec_root_node.next
 
       @group_node_stack = []
     end
 
-    def tree
+    def root
       if @tree.nil?
         segment = nil
         while segment = @segment_stream.read
@@ -84,7 +83,7 @@ module Edifact
             if @group_node_stack.empty?
               @tree = new_group_node
             else
-              @group_node_stack.last << new_group_node
+              @group_node_stack.last.segments << new_group_node
             end
             @group_node_stack << new_group_node
 
@@ -92,7 +91,7 @@ module Edifact
             spec_node.parent.segments.each {|s| s.visits = 0} # this only works because the first node in a group is required to have min=1 max=1
           end
 
-          @group_node_stack.last << SegmentNode.new(segment)
+          @group_node_stack.last.segments << SegmentNode.new(segment)
           spec_node.visits += 1
 
           Validation::SegmentSpec.new(spec_node).validate(segment)
