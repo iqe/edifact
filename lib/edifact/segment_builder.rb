@@ -23,13 +23,10 @@ module Edifact
     end
 
     def element(*component_values)
-      @pos += 1 # element separator
       e = Nodes::Element.new(@pos)
 
       component_values.each_with_index do |component_value, i|
-        if i > 0
-          @pos += 1 # component separator
-        end
+        @pos += 1 # element separator (for i == 0) or component separator (for i > 0)
 
         c = Nodes::Component.new(@pos, component_value)
         @pos += c.to_edifact.length # 'to_edifact' to correctly count escape characters

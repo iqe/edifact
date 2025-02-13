@@ -5,12 +5,12 @@ class SegmentStreamTest < Minitest::Test
 
   def test_basic_segment
     input("ABC+Hel:lo+World++'")
-    assert_equal [[10, "ABC", [14, [14, "Hel"], [18, "lo"]], [21, [21, "World"]], [27, [27, ""]], [28, [28, ""]]]], segments
+    assert_equal [[10, "ABC", [13, [14, "Hel"], [18, "lo"]], [20, [21, "World"]], [26, [27, ""]], [27, [28, ""]]]], segments
   end
 
   def test_multiple_segments
     input("ABC+Hel:lo'DEF+World'")
-    assert_equal [[10, "ABC", [14, [14, "Hel"], [18, "lo"]]], [21, "DEF", [25, [25, "World"]]]], segments
+    assert_equal [[10, "ABC", [13, [14, "Hel"], [18, "lo"]]], [21, "DEF", [24, [25, "World"]]]], segments
   end
 
   def test_minimal_segment
@@ -18,28 +18,28 @@ class SegmentStreamTest < Minitest::Test
     assert_equal [[10, "ABC"]], segments
 
     input("ABC+'")
-    assert_equal [[10, "ABC", [14, [14, ""]]]], segments
+    assert_equal [[10, "ABC", [13, [14, ""]]]], segments
 
     input("AAA+:'")
-    assert_equal [[10, "AAA", [14, [14, ""], [15, ""]]]], segments
+    assert_equal [[10, "AAA", [13, [14, ""], [15, ""]]]], segments
 
     input("AAA+::'")
-    assert_equal [[10, "AAA", [14, [14, ""], [15, ""], [16, ""]]]], segments
+    assert_equal [[10, "AAA", [13, [14, ""], [15, ""], [16, ""]]]], segments
 
     input("ABC++'")
-    assert_equal [[10, "ABC", [14, [14, ""]], [15, [15, ""]]]], segments
+    assert_equal [[10, "ABC", [13, [14, ""]], [14, [15, ""]]]], segments
 
     input("ABC+x'")
-    assert_equal [[10, "ABC", [14, [14, "x"]]]], segments
+    assert_equal [[10, "ABC", [13, [14, "x"]]]], segments
 
     input("ABC+x:y'")
-    assert_equal [[10, "ABC", [14, [14, "x"], [16, "y"]]]], segments
+    assert_equal [[10, "ABC", [13, [14, "x"], [16, "y"]]]], segments
 
     input("ABC+x::y'")
-    assert_equal [[10, "ABC", [14, [14, "x"], [16, ""], [17, "y"]]]], segments
+    assert_equal [[10, "ABC", [13, [14, "x"], [16, ""], [17, "y"]]]], segments
 
     input("ABC++y'")
-    assert_equal [[10, "ABC", [14, [14, ""]], [15, [15, "y"]]]], segments
+    assert_equal [[10, "ABC", [13, [14, ""]], [14, [15, "y"]]]], segments
   end
 
   def test_unexpected_eof

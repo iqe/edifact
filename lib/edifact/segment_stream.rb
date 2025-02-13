@@ -57,7 +57,7 @@ module Edifact
 
     def read_element
       element_separator = read_token(:element_separator)
-      element = Nodes::Element.new(element_separator.pos + 1) # +1 to skip the element separator
+      element = Nodes::Element.new(element_separator.pos)
 
       prev_token = element_separator
       loop do

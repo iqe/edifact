@@ -25,7 +25,7 @@ module Edifact::Validation
         element = segment.elements[i]
         if element
           element_spec.validate(element)
-          pos = element.pos + element.to_edifact.length - 1 # to_edifact to correctly count escape characters, -1 to exclude element separator
+          pos = element.pos + element.to_edifact.length # to_edifact to correctly count escape characters
         else
           unless element_spec.optional?
             raise Edifact::ParseError.new(segment.pos, "Missing element at position #{pos}, expected #{element_spec.to_s}")

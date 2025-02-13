@@ -29,12 +29,12 @@ class SegmentBuilderTest < Minitest::Test
     assert_equal "ABC", abc.name
 
     assert_equal 2, abc.elements.size
-    assert_equal 14, abc.elements[0].pos
+    assert_equal 13, abc.elements[0].pos
     assert_equal 14, abc.elements[0].components[0].pos
     assert_equal 16, abc.elements[0].components[1].pos
     assert_equal 18, abc.elements[0].components[2].pos
 
-    assert_equal 20, abc.elements[1].pos
+    assert_equal 19, abc.elements[1].pos
     assert_equal 20, abc.elements[1].components[0].pos
 
     ghi = @b.read
