@@ -81,8 +81,8 @@ class ComponentSpecTest < Minitest::Test
   def assert_invalid(component_spec, component_value)
     begin
       Edifact::Validation::ComponentSpec.new(component_spec).validate(Edifact::Nodes::Component.new(0, component_value))
-      fail "Expected Edifact::ValidationError for spec #{component_spec.inspect} and value #{component_value.inspect}"
-    rescue Edifact::ValidationError
+      fail "Expected ParseError for spec #{component_spec.inspect} and value #{component_value.inspect}"
+    rescue Edifact::ParseError
       # ok
     end
   end

@@ -9,7 +9,7 @@ module Edifact::Validation
 
     def validate(component)
       unless @validator.valid?(component)
-        raise Edifact::ValidationError.new(@specification, component)
+        raise Edifact::ParseError.new(component.pos, "Position #{component.pos}: Invalid value \"#{component.text}\". Expected \"#{@specification}\"")
       end
     end
 

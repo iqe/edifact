@@ -64,7 +64,7 @@ module Edifact
           @segment_group_stack.last.segments << segment
           spec_node.visits += 1
 
-          spec_node.validate(segment) # raises ValidationError if segment is invalid
+          spec_node.validate(segment) # raises ParseError if segment is invalid
 
           @spec_nodes = spec_node.next
 
@@ -169,6 +169,6 @@ module Edifact
           end
         end
       end
-  end
+    end
   end
 end
