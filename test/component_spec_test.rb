@@ -54,9 +54,13 @@ class ComponentSpecTest < Minitest::Test
   end
 
   def test_hash_for_optional_value
-    assert_valid({optional: "a"}, "")
-    assert_valid({optional: "a"}, "a")
-    assert_invalid({optional: "a"}, "b")
+    assert_valid({value: "a", optional: true}, "")
+    assert_valid({value: "a", optional: true}, "a")
+    assert_invalid({value: "a", optional: true}, "b")
+
+    assert_invalid({value: "a", optional: false}, "")
+    assert_valid({value: "a", optional: false}, "a")
+    assert_invalid({value: "a", optional: false}, "b")
   end
 
   def test_array_of_component_specs

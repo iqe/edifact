@@ -9,11 +9,13 @@ module Edifact::Validation
     def validate(component)
       case @specification
       when Hash
-        if @specification[:optional].nil?
-          raise "Unknown component spec: #{@specification.inspect}"
+        if @specification[:value].nil?
+          raise "Invalid component spec: #{@specification.inspect}"
         end
-        if component.text != ""
-          ComponentSpec.new(@specification[:optional]).validate(component)
+        if @specification[:optional] && component.text == ""
+          return # optional component is missing, no need to validate further
+        else
+          ComponentSpec.new(@specification[:value]).validate(component)
         end
 
       when Array # array of component specs (strings, regexps)
