@@ -17,5 +17,9 @@ module Edifact::Nodes
     def to_edifact
       @segments.map(&:to_edifact).join
     end
+
+    def ==(other)
+      self.class == other.class && @name == other.name && @segments == other.segments
+    end
   end
 end

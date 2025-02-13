@@ -9,5 +9,9 @@ module Edifact::Nodes
     def to_edifact
       @text.gsub(/([+:'?])/, '?\1') # TODO support different escape character and separators
     end
+
+    def ==(other)
+      self.class == other.class && @pos == other.pos && @text == other.text
+    end
   end
 end

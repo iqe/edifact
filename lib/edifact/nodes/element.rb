@@ -13,5 +13,9 @@ module Edifact::Nodes
     def to_edifact
       "+" + @components.map(&:to_edifact).join(":") # TODO support different element/component separators
     end
+
+    def ==(other)
+      self.class == other.class && @pos == other.pos && @components == other.components
+    end
   end
 end
