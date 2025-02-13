@@ -5,6 +5,10 @@ module Edifact::Validation
     def initialize(specification)
       case specification
         when Hash
+          @name = specification[:name]
+          if @name.nil?
+            raise "Invalid segment specification, name is missing: #{specification.inspect}"
+          end
           @element_specs = (specification[:elements] || []).map { |spec| ElementSpec.new(spec) }
         else
           raise "Invalid segment specification: #{specification.inspect}"
@@ -12,10 +16,18 @@ module Edifact::Validation
     end
 
     def validate(segment)
-      segment.elements.each_with_index do |element, i|
-        element_spec = @element_specs[i]
-        if element_spec # only validate elements that have a spec (ignore all other elements)
+      if @name != segment.name
+        raise Edifact::ParseError.new(segment.pos, "Expected segment #{@name}, got #{segment.name}")
+      end
+
+      @element_specs.each_with_index do |element_spec, i|
+        element = segment.elements[i]
+        if element
           element_spec.validate(element)
+        else
+          unless element_spec.optional?
+            raise Edifact::ParseError.new(segment.pos, "Missing element at index #{i}, expected #{element_spec.inspect}")
+          end
         end
       end
     end

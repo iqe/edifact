@@ -4,20 +4,34 @@ module Edifact::Validation
   class ElementSpec
     def initialize(specification)
       case specification
-      when Hash
-        @component_specs = specification[:components].map { |spec| ComponentSpec.new(spec) }
-      when Array
-        @component_specs = specification.map { |spec| ComponentSpec.new(spec) }
-      else
-        raise "Invalid element specification: #{specification.inspect}"
+        when Hash
+          @optional = specification[:optional]
+          if specification[:components].respond_to?(:map)
+            @component_specs = specification[:components].map { |spec| ComponentSpec.new(spec) }
+          else
+            raise "Invalid element specification: #{specification.inspect}"
+          end
+        when Array
+          @optional = false
+          @component_specs = specification.map { |spec| ComponentSpec.new(spec) }
+        else
+          raise "Invalid element specification: #{specification.inspect}"
       end
     end
 
+    def optional?
+      @optional
+    end
+
     def validate(element)
-      element.components.each_with_index do |component, i|
-        component_spec = @component_specs[i]
-        if component_spec # only validate components that have a spec (ignore all other components)
+      @component_specs.each_with_index do |component_spec, i|
+        component = element.components[i]
+        if component
           component_spec.validate(component)
+        else
+          unless component_spec.optional?
+            raise Edifact::ParseError.new(element.pos, "Missing component at index #{i}, expected #{component_spec.inspect}")
+          end
         end
       end
     end

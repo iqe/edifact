@@ -7,6 +7,10 @@ module Edifact::Validation
       @validator = self.class.build_validator(specification)
     end
 
+    def optional?
+      @validator.respond_to?(:optional?) && @validator.optional?
+    end
+
     def validate(component)
       unless @validator.valid?(component)
         raise Edifact::ParseError.new(component.pos, "Position #{component.pos}: Invalid value \"#{component.text}\". Expected \"#{@specification}\"")
@@ -53,6 +57,10 @@ module Edifact::Validation
         else
           @spec = ComponentSpec.build_validator(@spec)
         end
+      end
+
+      def optional?
+        @optional
       end
 
       def valid?(component)
