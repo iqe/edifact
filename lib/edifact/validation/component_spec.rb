@@ -4,67 +4,140 @@ module Edifact::Validation
   class ComponentSpec
     def initialize(specification)
       @specification = specification
+      @validator = self.class.build_validator(specification)
     end
 
     def validate(component)
-      case @specification
-      when Hash
-        if @specification[:value].nil?
-          raise "Invalid component spec: #{@specification.inspect}"
-        end
-        if @specification[:optional] && component.text == ""
-          return # optional component is missing, no need to validate further
-        else
-          ComponentSpec.new(@specification[:value]).validate(component)
-        end
-
-      when Array # array of component specs (strings, regexps)
-        @specification.each do |sub_specification|
-          begin
-            ComponentSpec.new(sub_specification).validate(component)
-            return # success - we only need one of the specs to match
-          rescue Edifact::ValidationError
-            next
-          end
-        end
+      unless @validator.valid?(component)
         raise Edifact::ValidationError.new(@specification, component)
+      end
+    end
 
-      when /^a(\d+)$/ # fixed alpha-only datatype
+    private
+
+    def self.build_validator(specification)
+      case specification
+      when Hash
+        HashValidator.new(specification)
+      when Array
+        ArrayValidator.new(specification)
+      when /^a(\d+)$/
         length = $1.to_i
-        unless component.text =~ /^[A-Za-z]{#{length}}$/ # TODO support other characters?
-          raise Edifact::ValidationError.new(@specification, component)
-        end
-
-      when /^an\.\.(\d+)$/ # variable alphanumeric datatype
+        FixedAlphaValidator.new(length)
+      when /^an\.\.(\d+)$/
         length = $1.to_i
-        unless component.text.length <= length
-          raise Edifact::ValidationError.new(@specification, component)
-        end
-
-      when /^n(\d+)$/ # fixed numeric datatype
+        VariableAlphanumericValidator.new(length)
+      when /^n(\d+)$/
         length = $1.to_i
-        unless component.text =~ /^\d{#{length}}$/
-          raise Edifact::ValidationError.new(@specification, component)
-        end
-
-      when /^n\.\.(\d+)$/ # variable numeric datatype
+        FixedNumericValidator.new(length)
+      when /^n\.\.(\d+)$/
         length = $1.to_i
-        unless component.text =~ /^\d{1,#{length}}$/
-          raise Edifact::ValidationError.new(@specification, component)
-        end
-
-      when String # exact string match
-        unless component.text == @specification
-          raise Edifact::ValidationError.new(@specification, component)
-        end
-
-      when Regexp # regex match
-        unless component.text =~ @specification
-          raise Edifact::ValidationError.new(@specification, component)
-        end
-
+        VariableNumericValidator.new(length)
+      when String
+        StringValidator.new(specification)
+      when Regexp
+        RegexValidator.new(specification)
       else
-        raise "Unknown component spec: #{@specification.inspect}"
+        raise "Invalid component specification: #{specification.inspect}"
+      end
+    end
+
+    # {value: "n4", optional: true}
+    class HashValidator
+      def initialize(specification)
+        @optional = specification[:optional]
+        @spec = specification[:value]
+
+        if @spec.nil?
+          raise "Invalid component specification: #{specification.inspect}"
+        else
+          @spec = ComponentSpec.build_validator(@spec)
+        end
+      end
+
+      def valid?(component)
+        if @optional && component.text == ""
+          return true
+        else
+          @spec.valid?(component)
+        end
+      end
+    end
+
+    # ["an..10", "n4"]
+    class ArrayValidator
+      def initialize(specification)
+        @component_specs = specification.map { |spec| ComponentSpec.build_validator(spec) }
+      end
+
+      def valid?(component)
+        @component_specs.any? {|sub_spec| sub_spec.valid?(component)}
+      end
+    end
+
+    # "a5"
+    class FixedAlphaValidator
+      def initialize(length)
+        @length = length
+      end
+
+      def valid?(component)
+        component.text =~ /^[A-Za-z]{#{@length}}$/ # TODO support other characters?
+      end
+    end
+
+    # "an..20"
+    class VariableAlphanumericValidator
+      def initialize(length)
+        @length = length
+      end
+
+      def valid?(component)
+        component.text.length <= @length
+      end
+    end
+
+    # "n3"
+    class FixedNumericValidator
+      def initialize(length)
+        @length = length
+      end
+
+      def valid?(component)
+        component.text =~ /^\d{#{@length}}$/
+      end
+    end
+
+    # "n..2"
+    class VariableNumericValidator
+      def initialize(length)
+        @length = length
+      end
+
+      def valid?(component)
+        component.text =~ /^\d{1,#{@length}}$/
+      end
+    end
+
+    # "somevalue"
+    class StringValidator
+      def initialize(specification)
+        @value = specification
+      end
+
+      def valid?(component)
+        component.text == @value
+      end
+    end
+
+    # /a+/
+    class RegexValidator
+      def initialize(specification)
+        @regex = specification
+      end
+
+      def valid?(component)
+        component.text =~ @regex
       end
     end
   end

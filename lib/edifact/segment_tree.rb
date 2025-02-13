@@ -11,7 +11,7 @@ module Edifact
 
     # A segment or a segment group
   class SpecificationNode
-    attr_reader :level, :index, :parent, :segments, :elements
+    attr_reader :level, :index, :parent, :segments
     attr_reader :name, :min, :max
 
     attr_accessor :visits
@@ -23,7 +23,6 @@ module Edifact
       @name = spec[:name]
       @min = spec[:min] || 1
       @max = spec[:max] || 1
-      @elements = spec[:elements] || []
 
       # SegmentTree requires the first element of a group to be min=1 max=1
       if index == 0 && (min != 1 || max != 1)
@@ -39,9 +38,16 @@ module Edifact
         @segments = spec[:segments].map.with_index do |child_spec, i|
           SpecificationNode.new(self, i, child_spec)
         end
+      else
+        @spec = Validation::SegmentSpec.new(spec)
       end
 
       @visits = 0
+    end
+
+    # Validate the segment against its specification
+    def validate(segment)
+      @spec.validate(segment)
     end
 
     # Returns a list of all nodes that can be visited next, based on the current visit count of this node
@@ -143,7 +149,7 @@ module Edifact
           @segment_group_stack.last.segments << segment
           spec_node.visits += 1
 
-          Validation::SegmentSpec.new(spec_node).validate(segment)
+          spec_node.validate(segment) # raises ValidationError if segment is invalid
 
           @spec_nodes = spec_node.next
 
