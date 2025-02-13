@@ -6,6 +6,10 @@ module Edifact::Nodes
       @components = components
     end
 
+    def length
+      to_edifact.length
+    end
+
     def <<(component)
       @components << component
     end

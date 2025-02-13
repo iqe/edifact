@@ -6,6 +6,10 @@ module Edifact::Nodes
       @text = text
     end
 
+    def length
+      to_edifact.length
+    end
+
     def to_edifact
       @text.gsub(/([+:'?])/, '?\1') # TODO support different escape character and separators
     end

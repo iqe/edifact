@@ -10,6 +10,10 @@ module Edifact::Nodes
       @segments.first ? @segments.first.pos : -1
     end
 
+    def length
+      to_edifact.length
+    end
+
     def <<(segment)
       @segments << segment
     end

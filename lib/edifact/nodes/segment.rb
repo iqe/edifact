@@ -7,6 +7,10 @@ module Edifact::Nodes
       @elements = elements
     end
 
+    def length
+      to_edifact.length
+    end
+
     def <<(element)
       @elements << element
     end

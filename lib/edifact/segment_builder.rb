@@ -29,7 +29,7 @@ module Edifact
         @pos += 1 # element separator (for i == 0) or component separator (for i > 0)
 
         c = Nodes::Component.new(@pos, component_value)
-        @pos += c.to_edifact.length # 'to_edifact' to correctly count escape characters
+        @pos += c.length
 
         e.components << c
       end
