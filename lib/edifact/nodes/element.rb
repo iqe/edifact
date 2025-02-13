@@ -1,9 +1,9 @@
 module Edifact::Nodes
   class Element
     attr_reader :pos, :components
-    def initialize(pos)
+    def initialize(pos, components=[])
       @pos = pos
-      @components = []
+      @components = components
     end
 
     def <<(component)

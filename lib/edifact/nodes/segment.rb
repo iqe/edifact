@@ -1,10 +1,10 @@
 module Edifact::Nodes
   class Segment
     attr_reader :pos, :name, :elements
-    def initialize(pos, name)
+    def initialize(pos, name, elements=[])
       @pos = pos
       @name = name
-      @elements = []
+      @elements = elements
     end
 
     def <<(element)
