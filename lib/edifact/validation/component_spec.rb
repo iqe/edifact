@@ -17,6 +17,10 @@ module Edifact::Validation
       end
     end
 
+    def to_s
+      @specification.inspect
+    end
+
     private
 
     def self.build_validator(specification)

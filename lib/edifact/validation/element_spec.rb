@@ -24,16 +24,22 @@ module Edifact::Validation
     end
 
     def validate(element)
+      pos = element.pos
       @component_specs.each_with_index do |component_spec, i|
         component = element.components[i]
         if component
           component_spec.validate(component)
+          pos = component.pos + component.to_edifact.length # to_edifact to correctly count escape characters
         else
           unless component_spec.optional?
-            raise Edifact::ParseError.new(element.pos, "Missing component at index #{i}, expected #{component_spec.inspect}")
+            raise Edifact::ParseError.new(pos, "Missing component at position #{pos}, expected #{component_spec.to_s.inspect}")
           end
         end
       end
+    end
+
+    def to_s
+      "[" + @component_specs.map(&:to_s).join(", ") + "]"
     end
   end
 end
