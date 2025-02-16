@@ -53,4 +53,24 @@ class SegmentBuilderTest < Minitest::Test
 
     assert_equal stream.read_remaining, @b.read_remaining
   end
+
+  def test_segment_stream_interface
+    message_specification = {
+      name: "MSG",
+      segments: [
+        { name: "ABC", elements: [["n1", "n1", "n1"]] },
+        { name: "GHI", elements: [["an..10","n1"]] },
+      ]
+    }
+
+    @b.segment("ABC")
+    @b.element("1", "2", "3")
+
+    @b.segment("GHI")
+    @b.element("4", "5")
+
+    tree = Edifact::SegmentTree.new(@b, message_specification)
+
+    assert_equal "ABC+1:2:3'GHI+4:5'", tree.root.to_edifact
+  end
 end

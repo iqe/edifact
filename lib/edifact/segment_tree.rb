@@ -25,7 +25,7 @@ module Edifact
 
     def root
       if @tree.nil?
-        if @segments.is_a?(SegmentStream)
+        if @segments.respond_to?(:read)
           segment = nil
           while segment = @segments.read
             on_segment(segment)
