@@ -1,3 +1,5 @@
+require_relative "lib/edifact/version"
+
 Gem::Specification.new do |spec|
   spec.name          = "edifact"
   spec.version       = Edifact::VERSION
