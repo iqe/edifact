@@ -46,6 +46,20 @@ class SegmentTreeTest < Minitest::Test
     input("ABC'DEF'GHI'")
   end
 
+  def test_same_possible_segments_with_different_elements
+    definition({
+      name: "MSG",
+      segments: [
+        { name: "ABC" },
+        { name: "DEF", min: 0, elements: [["A"]] },
+        { name: "DEF", min: 0, elements: [["B"]] },
+      ]
+    })
+
+    input("ABC'DEF+A'")
+    input("ABC'DEF+B'")
+  end
+
   def test_missing_segment
     definition({
       name: "MSG",

@@ -44,8 +44,17 @@ module Edifact
     private
 
     def on_segment(segment)
+      first_parse_error = nil
+
       @spec_nodes.each do |spec_node|
         if segment.name == spec_node.name
+
+          begin
+            spec_node.validate(segment) # raises ParseError if segment is invalid
+          rescue ParseError => e
+            first_parse_error ||= e
+            next # There may be another possible node with the same name whose elements match those of the current segment
+          end
 
           until @segment_group_stack.size <= spec_node.level
             @segment_group_stack.pop
@@ -73,15 +82,17 @@ module Edifact
           @segment_group_stack.last << segment
           spec_node.visits += 1
 
-          spec_node.validate(segment) # raises ParseError if segment is invalid
-
           @spec_nodes = spec_node.next
 
           return
         end
       end
 
-      raise ParseError.new(segment.pos, "Invalid segment #{segment.name.inspect} at position #{segment.pos}. Expected one of #{@spec_nodes.map(&:name).inspect}")
+      if first_parse_error
+        raise first_parse_error
+      else
+        raise ParseError.new(segment.pos, "Invalid segment #{segment.name.inspect} at position #{segment.pos}. Expected one of #{@spec_nodes.map(&:name).inspect}")
+      end
     end
 
     def on_eof
