@@ -29,7 +29,7 @@ class SegmentTreeTest < Minitest::Test
       ]
     })
 
-    assert_raises_msg('Invalid segment "DEF" at position 10. Expected one of ["ABC"]') { input("DEF'") }
+    assert_raises_msg('Invalid segment "DEF" at position 1:10. Expected one of ["ABC"]') { input("DEF'") }
   end
 
   def test_multiple_possible_segments
@@ -264,7 +264,7 @@ class SegmentTreeTest < Minitest::Test
       ]
     })
 
-    assert_raises_msg('Position 14: Invalid value "hello". Expected "1234"') { input("ABC+hello'") }
+    assert_raises_msg('Position 1:14: Invalid value "hello". Expected "1234"') { input("ABC+hello'") }
   end
 
   def test_reading_from_array_of_segments
@@ -277,8 +277,8 @@ class SegmentTreeTest < Minitest::Test
     })
 
     segments = [
-      Edifact::Nodes::Segment.new(0, "ABC", elements: [Edifact::Nodes::Element.new(0, "1234")]),
-      Edifact::Nodes::Segment.new(0, "DEF"),
+      Edifact::Nodes::Segment.new(Edifact::Position.new(0, 0), "ABC", elements: [Edifact::Nodes::Element.new(Edifact::Position.new(0, 0), "1234")]),
+      Edifact::Nodes::Segment.new(Edifact::Position.new(0, 0), "DEF"),
     ]
 
     segment_tree = Edifact::SegmentTree.new(segments, @tree_spec)

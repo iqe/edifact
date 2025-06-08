@@ -1,6 +1,21 @@
 require_relative 'errors'
 
 module Edifact
+  class Position
+    attr_reader :line, :column
+    def initialize(line, column)
+      @line, @column = line, column
+    end
+
+    def ==(other)
+      other.is_a?(Position) && @line == other.line && @column == other.column
+    end
+
+    def to_s
+      "#{@line}:#{@column}"
+    end
+  end
+
   class Token
     attr_reader :pos, :type, :value
     def initialize(pos, type, value=nil)
@@ -19,7 +34,8 @@ module Edifact
       @peek_buf = []
       @text_buf = ""
 
-      @token_pos = 1
+      @token_line = 1
+      @token_column = 1
       @escape_char_count = 0
 
       @element_separator = "+"
@@ -69,7 +85,7 @@ module Edifact
 
           c = peek_byte
           if c.nil?
-            raise UnexpectedEndOfInputError.new(@token_pos + 1)
+            raise UnexpectedEndOfInputError.new(Position.new(@token_line, @token_column + 1))
           end
           @text_buf << read_byte
         else
@@ -81,7 +97,7 @@ module Edifact
     def parse_una_header
       # UNA:+.? '
       una = @input.read(9)
-      @token_pos += 9
+      @token_column += 9
       if una && una.length == 9 && una[0..2] == "UNA"
         @component_separator = una[3]
         @element_separator = una[4]
@@ -109,8 +125,8 @@ module Edifact
     def separator_token(delimiter_name, delimiter_value)
       if @text_buf.empty?
         read_byte # consume delimiter
-        @token_pos += 1
-        Token.new(@token_pos - 1, delimiter_name, delimiter_value)
+        @token_column += 1
+        Token.new(Position.new(@token_line, @token_column - 1), delimiter_name, delimiter_value)
       else
         text_token
       end
@@ -118,17 +134,17 @@ module Edifact
 
     def text_token
       text = @text_buf
-      text_pos = @token_pos
+      text_pos = @token_column
 
       @text_buf = ""
-      @token_pos += text.size + @escape_char_count
+      @token_column += text.size + @escape_char_count
       @escape_char_count = 0
 
-      Token.new(text_pos, :text, text)
+      Token.new(Position.new(@token_line, text_pos), :text, text)
     end
 
     def eof_token
-      Token.new(@token_pos, :eof)
+      Token.new(Position.new(@token_line, @token_column), :eof)
     end
   end
 end

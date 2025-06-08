@@ -29,7 +29,7 @@ module Edifact::Validation
         component = element.components[i]
         if component
           component_spec.validate(component)
-          pos = component.pos + component.length
+          pos = Edifact::Position.new(component.pos.line, component.pos.column + component.length)
         else
           unless component_spec.optional?
             raise Edifact::ParseError.new(pos, "Missing component at position #{pos}, expected #{component_spec.to_s.inspect}")

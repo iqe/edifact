@@ -48,7 +48,7 @@ class TokenStreamTest < Minitest::Test
   end
 
   def test_escape_character_at_eof
-    assert_raises_msg(/Unexpected end of input .* 15/) { input("ABC+?") }
+    assert_raises_msg(/Unexpected end of input .* 1:15/) { input("ABC+?") }
   end
 
   def test_binary_text_gets_passed_through

@@ -7,29 +7,30 @@ module Edifact
   class SegmentBuilder
     def initialize
       @una_header = "UNA:+.? '"
-      @pos = 1 + @una_header.length
+      @line = 1
+      @column = 1 + @una_header.length
 
       @segment_group = Nodes::SegmentGroup.new("")
     end
 
     def segment(name)
       unless @segment_group.segments.empty?
-        @pos += 1 # segment terminator of previous segment
+        @column += 1 # segment terminator of previous segment
       end
 
-      @pos += name.length
-      @segment = Nodes::Segment.new(@pos - name.length, name)
+      @column += name.length
+      @segment = Nodes::Segment.new(Position.new(@line, @column - name.length), name)
       @segment_group << @segment
     end
 
     def element(*component_values)
-      e = Nodes::Element.new(@pos)
+      e = Nodes::Element.new(Position.new(@line, @column))
 
       component_values.each_with_index do |component_value, i|
-        @pos += 1 # element separator (for i == 0) or component separator (for i > 0)
+        @column += 1 # element separator (for i == 0) or component separator (for i > 0)
 
-        c = Nodes::Component.new(@pos, component_value)
-        @pos += c.length
+        c = Nodes::Component.new(Position.new(@line, @column), component_value)
+        @column += c.length
 
         e.components << c
       end

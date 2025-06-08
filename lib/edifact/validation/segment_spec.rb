@@ -20,12 +20,12 @@ module Edifact::Validation
         raise Edifact::ParseError.new(segment.pos, "Expected segment #{@name.inspect} at position #{segment.pos}, but got #{segment.name.inspect}")
       end
 
-      pos = segment.pos + segment.name.length
+      pos = Edifact::Position.new(segment.pos.line, segment.pos.column + segment.name.length)
       @element_specs.each_with_index do |element_spec, i|
         element = segment.elements[i]
         if element
           element_spec.validate(element)
-          pos = element.pos + element.length
+          pos = Edifact::Position.new(element.pos.line, element.pos.column + element.length)
         else
           unless element_spec.optional?
             raise Edifact::ParseError.new(segment.pos, "Missing element at position #{pos}, expected #{element_spec.to_s}")
