@@ -67,7 +67,35 @@ class TokenStreamTest < Minitest::Test
     assert_equal [[10, :text, "ABC"], [13, :element_separator], [14, :segment_separator], [15, :element_separator], [16, :eof]], tokens
   end
 
+  def test_newline_as_segment_separator
+    raw_input("UNA:+.? \nABC+Hello'World\n")
+
+    assert_equal [[pos(2, 1), :text, "ABC"], [pos(2, 4), :element_separator], [pos(2, 5), :text, "Hello'World"], [pos(2, 16), :segment_separator], [pos(3, 1), :eof]], tokens
+  end
+
+  def test_newline_as_element_separator
+    raw_input("UNA:\n.? 'ABC\nHello World'")
+
+    assert_equal [[pos(2, 5), :text, "ABC"], [pos(2, 8), :element_separator], [pos(3, 1), :text, "Hello World"], [pos(3, 12), :segment_separator], [pos(3, 13), :eof]], tokens
+  end
+
+  def test_newline_in_text
+    raw_input("UNA:+.? 'ABC+Hello\n\nWorld'")
+
+    assert_equal [[pos(1, 10), :text, "ABC"], [pos(1, 13), :element_separator], [pos(1, 14), :text, "Hello\n\nWorld"], [pos(3, 6), :segment_separator], [pos(3, 7), :eof]], tokens
+  end
+
+  def test_newline_in_text_with_escape_character
+    raw_input("UNA:+.? \nABC+Hello?\nWorld\n")
+
+    assert_equal [[pos(2, 1), :text, "ABC"], [pos(2, 4), :element_separator], [pos(2, 5), :text, "Hello\nWorld"], [pos(3, 6), :segment_separator], [pos(4, 1), :eof]], tokens
+  end
+
   private
+
+  def pos(line, column)
+    Edifact::Position.new(line, column)
+  end
 
   def input(edifact_msg)
     raw_input("UNA:+.? '#{edifact_msg}")

@@ -34,9 +34,13 @@ module Edifact
       @peek_buf = []
       @text_buf = ""
 
+      # Position of the current token
       @token_line = 1
       @token_column = 1
-      @escape_char_count = 0
+
+      # Position of the read cursor
+      @next_line = 1
+      @next_column = 1
 
       @element_separator = "+"
       @component_separator = ":"
@@ -80,12 +84,11 @@ module Edifact
         when @component_separator
           return separator_token(:component_separator, @component_separator)
         when @escape_character
-          @escape_char_count += 1
           read_byte # consume escape character
 
           c = peek_byte
           if c.nil?
-            raise UnexpectedEndOfInputError.new(Position.new(@token_line, @token_column + 1))
+            raise UnexpectedEndOfInputError.new(Position.new(@next_line, @next_column))
           end
           @text_buf << read_byte
         else
@@ -96,8 +99,7 @@ module Edifact
 
     def parse_una_header
       # UNA:+.? '
-      una = @input.read(9)
-      @token_column += 9
+      una = 9.times.map {read_byte}.join
       if una && una.length == 9 && una[0..2] == "UNA"
         @component_separator = una[3]
         @element_separator = una[4]
@@ -106,6 +108,9 @@ module Edifact
       else
         raise InvalidUnaHeaderError.new(una)
       end
+
+      @token_line = @next_line
+      @token_column = @next_column
     end
 
     def peek_byte
@@ -119,14 +124,28 @@ module Edifact
       if @peek_buf.size != 1
         peek_byte
       end
-      @peek_buf.shift
+      c = @peek_buf.shift
+
+      if c == "\n"
+        @next_line += 1
+        @next_column = 1
+      else
+        @next_column += 1
+      end
+
+      c
     end
 
     def separator_token(delimiter_name, delimiter_value)
       if @text_buf.empty?
         read_byte # consume delimiter
-        @token_column += 1
-        Token.new(Position.new(@token_line, @token_column - 1), delimiter_name, delimiter_value)
+        separator_line = @token_line
+        separator_columm = @token_column
+
+        @token_line = @next_line
+        @token_column = @next_column
+
+        Token.new(Position.new(separator_line, separator_columm), delimiter_name, delimiter_value)
       else
         text_token
       end
@@ -134,17 +153,18 @@ module Edifact
 
     def text_token
       text = @text_buf
-      text_pos = @token_column
+      text_line = @token_line
+      text_column = @token_column
 
       @text_buf = ""
-      @token_column += text.size + @escape_char_count
-      @escape_char_count = 0
+      @token_line = @next_line
+      @token_column = @next_column
 
-      Token.new(Position.new(@token_line, text_pos), :text, text)
+      Token.new(Position.new(text_line, text_column), :text, text)
     end
 
     def eof_token
-      Token.new(Position.new(@token_line, @token_column), :eof)
+      Token.new(Position.new(@next_line, @next_column), :eof)
     end
   end
 end
