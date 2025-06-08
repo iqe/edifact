@@ -23,6 +23,10 @@ class TokenStreamTest < Minitest::Test
     assert_equal "6", @token_stream.segment_separator
   end
 
+  def test_una_header_with_duplicate_characters
+    assert_raises_msg(/UNA/) { raw_input("UNA:+.? +") }
+  end
+
   def test_empty_element
     input("ABC++'")
     assert_equal [[10, :text, "ABC"], [13, :element_separator], [14, :element_separator], [15, :segment_separator], [16, :eof]], tokens

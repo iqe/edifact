@@ -109,6 +109,11 @@ module Edifact
         raise InvalidUnaHeaderError.new(una)
       end
 
+      # Detect duplicate control characters
+      if una[3, 6].bytes.uniq.length != 6
+        raise InvalidUnaHeaderError.new(una)
+      end
+
       @token_line = @next_line
       @token_column = @next_column
     end
