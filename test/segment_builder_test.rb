@@ -61,6 +61,60 @@ class SegmentBuilderTest < Minitest::Test
     assert_equal 26, ghi.pos
   end
 
+  def test_positions_with_newline_in_component_text
+    @b.segment("ABC")
+    @b.element("Hello\n\nWorld", "x")
+
+    @b.segment("GHI")
+    @b.element("4", "5")
+
+    abc = @b.read
+    assert_equal pos(1,10), abc.pos
+
+    assert_equal pos(1,13), abc.elements[0].pos
+    assert_equal pos(1,14), abc.elements[0].components[0].pos
+
+    assert_equal pos(3,7), abc.elements[0].components[1].pos
+
+    ghi = @b.read
+    assert_equal pos(3,9), ghi.pos
+  end
+
+  def test_positions_with_newline_as_segment_separator
+    config = Edifact::Nodes::ToEdifactConfig.new(
+      segment_separator: "\n",
+    )
+
+    @b = Edifact::SegmentBuilder.new(config)
+
+    @b.segment("ABC")
+    @b.element("x")
+
+    @b.segment("GHI")
+    @b.element("\ny")
+
+    @b.segment("KLM")
+    @b.element("z")
+
+    abc = @b.read
+    assert_equal pos(2, 1), abc.pos
+    assert_equal pos(2, 4), abc.elements[0].pos
+
+    ghi = @b.read
+    assert_equal pos(3, 1), ghi.pos
+    assert_equal pos(3, 4), ghi.elements[0].pos
+
+    klm = @b.read
+    assert_equal pos(5, 1), klm.pos
+    assert_equal pos(5, 4), klm.elements[0].pos
+  end
+
+  def test_newline_is_not_allowed_for_other_control_characters
+    assert_raises(ArgumentError) { Edifact::Nodes::ToEdifactConfig.new(element_separator: "\n") }
+    assert_raises(ArgumentError) { Edifact::Nodes::ToEdifactConfig.new(component_separator: "\n") }
+    assert_raises(ArgumentError) { Edifact::Nodes::ToEdifactConfig.new(release_character: "\n") }
+  end
+
   def test_roundtrip_with_segment_stream
     @b.segment("ABC")
     @b.element("1", "2", "3")
@@ -92,5 +146,11 @@ class SegmentBuilderTest < Minitest::Test
     tree = Edifact::SegmentTree.new(@b, message_specification)
 
     assert_equal "ABC+1:2:3'GHI+4:5'", tree.root.to_edifact
+  end
+
+  private
+
+  def pos(line, column)
+    Edifact::Position.new(line, column)
   end
 end

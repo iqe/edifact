@@ -14,8 +14,20 @@ module Edifact
     end
 
     def segment(name)
-      unless @segment_group.segments.empty?
-        @column += 1 # segment terminator of previous segment
+      if @segment_group.segments.empty?
+        # first segment, handle \n from una header
+        if @config.segment_separator == "\n"
+          @line += 1
+          @column = 1
+        end
+      else
+        # segment separator of previous segment
+        if @config.segment_separator == "\n"
+          @line += 1
+          @column = 1
+        else
+          @column += 1
+        end
       end
 
       @column += name.length
@@ -30,7 +42,16 @@ module Edifact
         @column += 1 # element separator (for i == 0) or component separator (for i > 0)
 
         c = Nodes::Component.new(Position.new(@line, @column), component_value)
-        @column += c.length
+
+        i = component_value.rindex("\n")
+        if i
+          newline_count = component_value.count("\n")
+
+          @line += newline_count
+          @column = component_value.length - i
+        else
+          @column += component_value.length
+        end
 
         e.components << c
       end
