@@ -124,12 +124,12 @@ module Edifact
 
         # SegmentTree requires the first element of a group to be min=1 max=1
         if index == 0 && (min != 1 || max != 1)
-          raise "Invalid specification for #{@name}: First element of a group must be min=1 max=1 (got min=#{min} max=#{max})"
+          raise ArgumentError.new("Invalid specification for #{@name}: First element of a group must be min=1 max=1 (got min=#{min} max=#{max})")
         end
 
         # SegmentTree does not support groups as first element of a group (except for the root node)
         if index == 0 && spec[:segments] && parent
-          raise "Invalid specification for #{@name}: First element of a group cannot be another group"
+          raise ArgumentError.new("Invalid specification for #{@name}: First element of a group cannot be another group")
         end
 
         if spec[:segments]

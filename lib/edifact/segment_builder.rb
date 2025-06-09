@@ -57,7 +57,7 @@ module Edifact
       end
 
       if @segment.nil?
-        raise "No segment defined"
+        raise RuntimeError.new("Cannot build element. No segment defined")
       end
 
       @segment.elements << e
