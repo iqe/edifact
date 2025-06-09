@@ -83,13 +83,32 @@ module Edifact
       end
     end
 
-    def segments
-      @segment_group.segments
-    end
-
     def to_edifact
       @config.una_header + @segment_group.to_edifact(@config)
     end
+
+    module SegmentGroupInterface
+      def [](query)
+        @segment_group[query]
+      end
+
+      def length
+        @segment_group.length
+      end
+
+      def pos
+        @segment_group.pos
+      end
+
+      def segments
+        @segment_group.segments
+      end
+
+      def to_h
+        @segment_group.to_h
+      end
+    end
+    include SegmentGroupInterface
 
     module SegmentStreamInterface
       def read

@@ -130,6 +130,16 @@ class SegmentBuilderTest < Minitest::Test
     assert_raises(NoMethodError) { @b.ABCD }
   end
 
+  def test_segment_group_interface
+    @b.ABC("1", "2", "3")
+    @b.ABC(["Hello", "World"])
+    @b.GHI("4", ["5", "6"])
+    @b.KLM
+
+    assert_equal "ABC+Hello:World'", @b["ABC+Hel"].to_edifact
+    assert_equal 4, @b.segments.length
+  end
+
   def test_roundtrip_with_segment_stream
     @b.segment("ABC")
     @b.element("1", "2", "3")
