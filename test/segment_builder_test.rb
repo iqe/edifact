@@ -16,6 +16,26 @@ class SegmentBuilderTest < Minitest::Test
     assert_equal "UNA:+.? 'ABC+1:2:3+Hello'DEF+4:5'", @b.to_edifact
   end
 
+  def test_to_edifact_with_custom_control_characters
+    config = Edifact::Nodes::ToEdifactConfig.new(
+      segment_separator: "|",
+      element_separator: "*",
+      component_separator: "#",
+      release_character: "/"
+    )
+
+    @b = Edifact::SegmentBuilder.new(config)
+
+    @b.segment("ABC")
+    @b.element("1", "2", "3")
+    @b.element("H|e*l#l/o")
+
+    @b.segment("DEF")
+    @b.element("4", "5")
+
+    assert_equal "UNA#*./ |ABC*1#2#3*H/|e/*l/#l//o|DEF*4#5|", @b.to_edifact
+  end
+
   def test_positions
     @b.segment("ABC")
     @b.element("1", "2", "3")

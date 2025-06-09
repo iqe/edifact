@@ -5,10 +5,10 @@ require_relative 'nodes/component'
 
 module Edifact
   class SegmentBuilder
-    def initialize
-      @una_header = "UNA:+.? '"
+    def initialize(config = Edifact::Nodes::ToEdifactConfig::DEFAULT)
+      @config = config
       @line = 1
-      @column = 1 + @una_header.length
+      @column = 1 + @config.una_header.length
 
       @segment_group = Nodes::SegmentGroup.new("")
     end
@@ -43,7 +43,7 @@ module Edifact
     end
 
     def to_edifact
-      @una_header + @segment_group.to_edifact
+      @config.una_header + @segment_group.to_edifact(@config)
     end
 
     module SegmentStreamInterface

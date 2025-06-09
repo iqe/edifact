@@ -1,3 +1,5 @@
+require_relative 'to_edifact_config'
+
 module Edifact::Nodes
   class Element
     attr_reader :pos, :components
@@ -14,8 +16,8 @@ module Edifact::Nodes
       @components << component
     end
 
-    def to_edifact
-      "+" + @components.map(&:to_edifact).join(":") # TODO support different element/component separators
+    def to_edifact(config=Edifact::Nodes::ToEdifactConfig::DEFAULT)
+      config.element_separator + @components.map {|c| c.to_edifact(config)}.join(config.component_separator)
     end
 
     def ==(other)

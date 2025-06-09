@@ -1,3 +1,5 @@
+require_relative 'to_edifact_config'
+
 module Edifact::Nodes
   class Component
     attr_reader :pos, :text
@@ -10,8 +12,8 @@ module Edifact::Nodes
       to_edifact.length
     end
 
-    def to_edifact
-      @text.gsub(/([+:'?])/, '?\1') # TODO support different escape character and separators
+    def to_edifact(config=Edifact::Nodes::ToEdifactConfig::DEFAULT)
+      config.escape(@text)
     end
 
     def ==(other)

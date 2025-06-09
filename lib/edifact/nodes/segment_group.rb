@@ -1,3 +1,5 @@
+require_relative 'to_edifact_config'
+
 module Edifact::Nodes
   class SegmentGroup
     attr_reader :name, :segments
@@ -18,8 +20,8 @@ module Edifact::Nodes
       @segments << segment
     end
 
-    def to_edifact
-      @segments.map(&:to_edifact).join
+    def to_edifact(config=Edifact::Nodes::ToEdifactConfig::DEFAULT)
+      @segments.map {|s| s.to_edifact(config)}.join
     end
 
     def to_h

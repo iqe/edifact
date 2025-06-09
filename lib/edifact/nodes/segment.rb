@@ -1,3 +1,5 @@
+require_relative 'to_edifact_config'
+
 module Edifact::Nodes
   class Segment
     attr_reader :pos, :name, :elements
@@ -15,8 +17,8 @@ module Edifact::Nodes
       @elements << element
     end
 
-    def to_edifact
-      @name + @elements.map(&:to_edifact).join + "'" # TODO support different segment separator
+    def to_edifact(config=Edifact::Nodes::ToEdifactConfig::DEFAULT)
+      @name + @elements.map {|e| e.to_edifact(config)}.join + config.segment_separator
     end
 
     def to_h
