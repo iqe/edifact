@@ -34,5 +34,29 @@ module Edifact::Nodes
     def ==(other)
       self.class == other.class && @name == other.name && @segments == other.segments
     end
+
+    def [](query)
+      segments = case query
+        when /^[A-Z0-9]{3}\+.+/ # segment name + content
+          @segments.select { |segment| segment.to_edifact.start_with?(query) }
+        when /^[A-Z0-9]{3}/ # segment name
+          @segments.select { |segment| segment.name == query }
+        when Regexp
+          @segments.select { |segment| segment.to_edifact =~ query }
+        when Integer
+          [@segments[query]]
+        else
+          raise ArgumentError.new("Invalid query: #{query.inspect}")
+        end
+
+      case segments.length
+      when 0
+        nil
+      when 1
+        segments.first
+      else
+        segments
+      end
+    end
   end
 end
