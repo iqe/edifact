@@ -63,6 +63,26 @@ module Edifact
       @segment.elements << e
     end
 
+    def method_missing(name, *args, &block)
+      if name =~ /^[A-Z0-9]{3}$/
+        self.segment(name.to_s)
+
+        elements = args
+        elements.each do |components|
+          case components
+          when String
+            self.element(components) # single component
+          when Array
+            self.element(*components) # multiple components
+          else
+            raise ArgumentError.new("Invalid argument type: #{components.class}")
+          end
+        end
+      else
+        super
+      end
+    end
+
     def segments
       @segment_group.segments
     end
