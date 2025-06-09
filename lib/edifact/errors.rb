@@ -35,4 +35,31 @@ module Edifact
       super(token.pos, message)
     end
   end
+
+  class SpecificationError < StandardError
+    def initialize(spec_type, specification, message=nil)
+      msg = "Invalid #{spec_type} specification"
+      msg += ": #{message}" if message
+      msg += ": #{specification.inspect}"
+      super(msg)
+    end
+  end
+
+  class ComponentSpecError < SpecificationError
+    def initialize(specification, message=nil)
+      super("component", specification, message)
+    end
+  end
+
+  class ElementSpecError < SpecificationError
+    def initialize(specification, message=nil)
+      super("element", specification, message)
+    end
+  end
+
+  class SegmentSpecError < SpecificationError
+    def initialize(specification, message=nil)
+      super("segment", specification, message)
+    end
+  end
 end

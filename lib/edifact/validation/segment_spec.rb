@@ -7,11 +7,11 @@ module Edifact::Validation
         when Hash
           @name = specification[:name]
           if @name.nil?
-            raise "Invalid segment specification, name is missing: #{specification.inspect}"
+            raise Edifact::SegmentSpecError.new(specification, "Missing ':name' key")
           end
           @element_specs = (specification[:elements] || []).map { |spec| ElementSpec.new(spec) }
         else
-          raise "Invalid segment specification: #{specification.inspect}"
+          raise Edifact::SegmentSpecError.new(specification)
       end
     end
 

@@ -9,13 +9,13 @@ module Edifact::Validation
           if specification[:components].respond_to?(:map)
             @component_specs = specification[:components].map { |spec| ComponentSpec.new(spec) }
           else
-            raise "Invalid element specification: #{specification.inspect}"
+            raise Edifact::ElementSpecError.new(specification, "Components must be Array or similar, got #{specification[:components].inspect}")
           end
         when Array
           @optional = false
           @component_specs = specification.map { |spec| ComponentSpec.new(spec) }
         else
-          raise "Invalid element specification: #{specification.inspect}"
+          raise Edifact::ElementSpecError.new(specification, "Must be Hash or Array")
       end
     end
 

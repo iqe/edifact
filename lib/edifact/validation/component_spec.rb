@@ -46,7 +46,7 @@ module Edifact::Validation
       when Regexp
         RegexValidator.new(specification)
       else
-        raise "Invalid component specification: #{specification.inspect}"
+        raise Edifact::ComponentSpecError.new(specification)
       end
     end
 
@@ -57,7 +57,7 @@ module Edifact::Validation
         @spec = specification[:value]
 
         if @spec.nil?
-          raise "Invalid component specification: #{specification.inspect}"
+          raise Edifact::ComponentSpecError.new(specification, "Missing ':value' key")
         else
           @spec = ComponentSpec.build_validator(@spec)
         end
