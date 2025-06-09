@@ -63,6 +63,10 @@ module Edifact
       @segment.elements << e
     end
 
+    def segments
+      @segment_group.segments
+    end
+
     def to_edifact
       @config.una_header + @segment_group.to_edifact(@config)
     end
