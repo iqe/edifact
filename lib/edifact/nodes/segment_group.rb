@@ -9,7 +9,7 @@ module Edifact::Nodes
     end
 
     def pos
-      @segments.first ? @segments.first.pos : -1
+      @segments.first ? @segments.first.pos : Edifact::Nodes::Position.new(0, 0)
     end
 
     def length
