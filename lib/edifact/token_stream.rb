@@ -111,12 +111,12 @@ module Edifact
         @escape_character = una[6]
         @segment_separator = una[8]
       else
-        raise InvalidUnaHeaderError.new(una)
+        raise InvalidUnaHeaderError.new(Position.new(@token_line, @token_column), una)
       end
 
       # Detect duplicate control characters
       if una[3, 6].bytes.uniq.length != 6
-        raise InvalidUnaHeaderError.new(una)
+        raise InvalidUnaHeaderError.new(Position.new(@token_line, @token_column), una)
       end
 
       @token_line = @next_line

@@ -9,8 +9,8 @@ module Edifact
   end
 
   class InvalidUnaHeaderError < ParseError
-    def initialize(una_header)
-      super(0, "Invalid UNA header at position #{pos}. Got #{una_header.inspect}.")
+    def initialize(pos, una_header)
+      super(pos, "Invalid UNA header at position #{pos}. Got #{una_header.inspect}.")
     end
   end
 
