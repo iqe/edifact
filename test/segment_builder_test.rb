@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class SegmentBuilderTest < Minitest::Test
+  include TestHelper
+
   def setup
     @b = Edifact::SegmentBuilder.new
   end
@@ -171,11 +173,5 @@ class SegmentBuilderTest < Minitest::Test
     tree = Edifact::SegmentTree.new(@b, message_specification)
 
     assert_equal "ABC+1:2:3'GHI+4:5'", tree.root.to_edifact
-  end
-
-  private
-
-  def pos(line, column)
-    Edifact::Position.new(line, column)
   end
 end

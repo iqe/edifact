@@ -119,10 +119,6 @@ class TokenStreamTest < Minitest::Test
 
   private
 
-  def pos(line, column)
-    Edifact::Position.new(line, column)
-  end
-
   def input(edifact_msg)
     raw_input("UNA:+.? '#{edifact_msg}")
   end

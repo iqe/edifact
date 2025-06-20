@@ -18,6 +18,10 @@ module TestHelper
       assert_equal message, error.message
     end
   end
+
+  def pos(line, column)
+    Edifact::Position.new(line, column)
+  end
 end
 
 # Overwrite equality to allow comparing a Position with an Integer
