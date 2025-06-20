@@ -95,6 +95,28 @@ class TokenStreamTest < Minitest::Test
     assert_equal [[pos(2, 1), :text, "ABC"], [pos(2, 4), :element_separator], [pos(2, 5), :text, "Hello\nWorld"], [pos(3, 6), :segment_separator], [pos(4, 1), :eof]], tokens
   end
 
+  def test_next_pos
+    input = "UNA:+.? 'ABC+Hello'"
+    token_stream = Edifact::TokenStream.new(StringIO.new(input))
+
+    assert_equal pos(1, 10), token_stream.next_pos
+
+    token_stream.read # ABC
+    assert_equal pos(1, 13), token_stream.next_pos
+
+    token_stream.read # +
+    assert_equal pos(1, 14), token_stream.next_pos
+
+    token_stream.read # Hello
+    assert_equal pos(1, 19), token_stream.next_pos
+
+    token_stream.read # '
+    assert_equal pos(1, 20), token_stream.next_pos
+
+    token_stream.read # EOF
+    assert_equal pos(1, 20), token_stream.next_pos
+  end
+
   private
 
   def pos(line, column)

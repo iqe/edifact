@@ -65,6 +65,11 @@ module Edifact
       tokens
     end
 
+    # The position of the next token to be read.
+    def next_pos
+      Position.new(@next_line, @next_column)
+    end
+
     private
 
     def next_token
