@@ -14,6 +14,8 @@ module Edifact
     def to_s
       "#{@line}:#{@column}"
     end
+
+    EOF = Position.new(-1, -1)
   end
 
   class Token

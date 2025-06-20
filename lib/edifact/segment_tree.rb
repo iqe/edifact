@@ -98,7 +98,7 @@ module Edifact
     def on_eof
       # Check if the spec requires more segments
       if @spec_nodes.any? {|node| node.min > node.visits}
-        raise ParseError.new(-1, "Unexpected end of input. Expected one of #{@spec_nodes.map(&:name).inspect}") # FIXME: Position
+        raise ParseError.new(Position::EOF, "Unexpected end of input. Expected one of #{@spec_nodes.map(&:name).inspect}")
       end
 
       # # Sanity check
