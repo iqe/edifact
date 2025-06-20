@@ -174,4 +174,18 @@ class SegmentBuilderTest < Minitest::Test
 
     assert_equal "ABC+1:2:3'GHI+4:5'", tree.root.to_edifact
   end
+
+  def test_segment_stream_interface_next_pos
+    assert_equal pos(1, 10), @b.next_pos
+
+    @b.segment("ABC")
+    assert_equal pos(1, 14), @b.next_pos
+
+    @b.element("1", "2", "3")
+    assert_equal pos(1, 20), @b.next_pos
+
+    @b.segment("GHI")
+    @b.element("4", "5")
+    assert_equal pos(1, 28), @b.next_pos
+  end
 end

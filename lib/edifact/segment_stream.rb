@@ -28,6 +28,11 @@ module Edifact
       segments
     end
 
+    # The position of the next segment to be read.
+    def next_pos
+      @token_stream.next_pos
+    end
+
     private
 
     def read_segment

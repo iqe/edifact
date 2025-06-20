@@ -66,6 +66,22 @@ class SegmentStreamTest < Minitest::Test
     assert_raises_msg(/Unexpected "'" .* 1:16/) { input("AAA+x''") }
   end
 
+  def test_next_pos
+    input = "UNA:+.? 'ABC+Hello'DEF+World'"
+    stream = Edifact::SegmentStream.new(Edifact::TokenStream.new(StringIO.new(input)))
+
+    assert_equal pos(1, 10), stream.next_pos
+
+    stream.read # ABC+Hello'
+    assert_equal pos(1, 20), stream.next_pos
+
+    stream.read # DEF+World'
+    assert_equal pos(1, 30), stream.next_pos
+
+    stream.read
+    assert_equal pos(1, 30), stream.next_pos
+  end
+
   private
 
   def input(s)

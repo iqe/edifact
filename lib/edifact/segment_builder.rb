@@ -118,6 +118,14 @@ module Edifact
       def read_remaining
         @segment_group.segments.take(@segment_group.segments.length)
       end
+
+      def next_pos
+        if @segment_group.segments.empty?
+          Position.new(@line, @column)
+        else
+          Position.new(@line, @column + 1) # +1 for the last segment separator
+        end
+      end
     end
     include SegmentStreamInterface
   end
