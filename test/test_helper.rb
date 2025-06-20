@@ -4,7 +4,7 @@ SimpleCov.start do
 end
 
 require 'minitest/autorun'
-require 'edifact'
+require_relative '../lib/edifact'
 
 module TestHelper
   def assert_raises_msg(message)
