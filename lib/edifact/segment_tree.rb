@@ -6,7 +6,7 @@ module Edifact
   # SegmentTree creates a tree structure from a stream of segments.
   #
   # The tree is built according to a message specification.
-  # The tree structure and all segments' elements are validated against the specification.
+  # The segments and all their elements are validated against the specification.
   class SegmentTree
     # Create a new SegmentTree from a stream of segments and a message specification.
     #
