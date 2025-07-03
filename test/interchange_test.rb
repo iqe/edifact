@@ -55,8 +55,8 @@ class InterchangeTest < Minitest::Test
       UNZ
     EDIFACT
 
-    assert_raises_msg('Missing element at position 2:4, expected ["a4", "n1"]') { interchange(invalid_unb) }
-    assert_raises_msg('Missing element at position 5:4, expected ["n..6"]') { interchange(invalid_unz) }
+    assert_raises_msg(Edifact::ParseError, 'Missing element at position 2:4, expected ["a4", "n1"]') { interchange(invalid_unb) }
+    assert_raises_msg(Edifact::ParseError, 'Missing element at position 5:4, expected ["n..6"]') { interchange(invalid_unz) }
   end
 
   def test_validates_unh_and_unt
@@ -74,8 +74,8 @@ class InterchangeTest < Minitest::Test
       UNZ+1+42
     EDIFACT
 
-    assert_raises_msg('Missing element at position 3:4, expected ["an..14"]') { interchange(invalid_unh) }
-    assert_raises_msg('Missing element at position 4:4, expected ["n..6"]') { interchange(invalid_unt) }
+    assert_raises_msg(Edifact::ParseError, 'Missing element at position 3:4, expected ["an..14"]') { interchange(invalid_unh) }
+    assert_raises_msg(Edifact::ParseError, 'Missing element at position 4:4, expected ["n..6"]') { interchange(invalid_unt) }
   end
 
   def test_detects_missing_unz
@@ -85,7 +85,7 @@ class InterchangeTest < Minitest::Test
       UNT+2+7
     EDIFACT
 
-    assert_raises_msg("Unexpected end of input at position 5:1.") { interchange(missing_unz) }
+    assert_raises_msg(Edifact::ParseError, "Unexpected end of input at position 5:1.") { interchange(missing_unz) }
   end
 
   def test_detects_missing_unt
@@ -94,7 +94,7 @@ class InterchangeTest < Minitest::Test
       UNH+7+Z:Y:X:W
     EDIFACT
 
-    assert_raises_msg("Unexpected end of input at position 4:1.") { interchange(missing_unt) }
+    assert_raises_msg(Edifact::ParseError, "Unexpected end of input at position 4:1.") { interchange(missing_unt) }
   end
 
   def test_detects_malformed_message
@@ -105,7 +105,7 @@ class InterchangeTest < Minitest::Test
       UNZ+1+42
     EDIFACT
 
-    assert_raises_msg("Expected UNH segment, got UNT") { interchange(malformed) }
+    assert_raises_msg(Edifact::ParseError, "Expected UNH segment, got UNT") { interchange(malformed) }
   end
 
   def test_detects_segments_after_interchange_end
@@ -117,7 +117,7 @@ class InterchangeTest < Minitest::Test
       ABC+Hello
     EDIFACT
 
-    assert_raises_msg("Expected end of interchange, but got ABC") { interchange(missing_unz) }
+    assert_raises_msg(Edifact::ParseError, "Expected end of interchange, but got ABC") { interchange(missing_unz) }
   end
 
   def test_validates_interchange_control_references
@@ -130,7 +130,7 @@ class InterchangeTest < Minitest::Test
       UNZ+1+43
     EDIFACT
 
-    assert_raises_msg("Interchange control references do not match: UNB:42 != UNZ:43") { interchange(input) }
+    assert_raises_msg(Edifact::ParseError, "Interchange control references do not match: UNB:42 != UNZ:43") { interchange(input) }
   end
 
   def test_validates_message_control_numbers
@@ -143,7 +143,7 @@ class InterchangeTest < Minitest::Test
       UNZ+1+42
     EDIFACT
 
-    assert_raises_msg("Message control numbers do not match: UNH:7 != UNT:8") { interchange(input) }
+    assert_raises_msg(Edifact::ParseError, "Message control numbers do not match: UNH:7 != UNT:8") { interchange(input) }
   end
 
   def test_validates_message_segment_counts
@@ -156,7 +156,7 @@ class InterchangeTest < Minitest::Test
       UNZ+1+42
     EDIFACT
 
-    assert_raises_msg("Segment count does not match: UNT:5 != Actual:4") { interchange(input) }
+    assert_raises_msg(Edifact::ParseError, "Segment count does not match: UNT:5 != Actual:4") { interchange(input) }
   end
 
   private
