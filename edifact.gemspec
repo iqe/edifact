@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Michael Goth"]
   spec.email         = ["iqe@gmx.net"]
 
-  spec.summary       = %q{A library to parse EDIFACT}
-  spec.description   = %q{A validating parser for EDIFACT messages}
+  spec.summary       = "A validating parser and builder for EDIFACT messages"
+  spec.description   = "A library to work with EDIFACT messages in pure Ruby. It supports parsing, validating, and building messages according to the EDIFACT standard."
   spec.homepage      = "https://github.com/iqe/edifact"
   spec.license       = "MIT"
 
