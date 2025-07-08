@@ -21,6 +21,12 @@ class SegmentTreeTest < Minitest::Test
     })
   end
 
+  def test_specification_without_root_group
+    definition({ name: "ABC" }) # missing group
+
+    assert_raises_msg(Edifact::MessageSpecError, /Invalid message specification: Root of specification must be a single group/) { input("ABC'") }
+  end
+
   def test_wrong_segment
     definition({
       name: "MSG",

@@ -122,14 +122,19 @@ module Edifact
         @min = spec[:min] || 1
         @max = spec[:max] || 1
 
+        # SegmentTree requires the root node to be a group
+        if parent.nil? && spec[:segments].nil?
+          raise MessageSpecError.new(spec, "Root of specification must be a single group")
+        end
+
         # SegmentTree requires the first element of a group to be min=1 max=1
         if index == 0 && (min != 1 || max != 1)
-          raise ArgumentError.new("Invalid specification for #{@name}: First element of a group must be min=1 max=1 (got min=#{min} max=#{max})")
+          raise SegmentSpecError.new("First element of a group must be min=1 max=1 (got min=#{min} max=#{max})")
         end
 
         # SegmentTree does not support groups as first element of a group (except for the root node)
         if index == 0 && spec[:segments] && parent
-          raise ArgumentError.new("Invalid specification for #{@name}: First element of a group cannot be another group")
+          raise MessageSpecError.new("First element of a group cannot be another group")
         end
 
         if spec[:segments]

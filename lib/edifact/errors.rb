@@ -45,6 +45,12 @@ module Edifact
     end
   end
 
+  class MessageSpecError < SpecificationError
+    def initialize(specification, message=nil)
+      super("message", specification, message)
+    end
+  end
+
   class ComponentSpecError < SpecificationError
     def initialize(specification, message=nil)
       super("component", specification, message)
