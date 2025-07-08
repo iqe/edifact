@@ -22,7 +22,7 @@ Or build and install the gem locally:
 
 ```sh
 rake build
-gem install ./edifact-0.1.0.gem
+gem install ./edifact-0.5.0.gem
 ```
 
 ## Usage
