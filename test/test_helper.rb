@@ -7,8 +7,8 @@ require 'minitest/autorun'
 require_relative '../lib/edifact'
 
 module TestHelper
-  def assert_raises_msg(message)
-    error = assert_raises(Edifact::ParseError) do
+  def assert_raises_msg(exception_class, message)
+    error = assert_raises(exception_class) do
       yield
     end
 

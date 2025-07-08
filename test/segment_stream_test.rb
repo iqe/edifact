@@ -43,27 +43,27 @@ class SegmentStreamTest < Minitest::Test
   end
 
   def test_unexpected_eof
-    assert_raises_msg(/Unexpected end of input .* 1:13/) { input("AAA") }
-    assert_raises_msg(/Unexpected end of input .* 1:14/) { input("AAA+") }
-    assert_raises_msg(/Unexpected end of input .* 1:15/) { input("AAA+x") }
-    assert_raises_msg(/Unexpected end of input .* 1:16/) { input("AAA+x:") }
-    assert_raises_msg(/Unexpected end of input .* 1:17/) { input("AAA+x:y") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected end of input .* 1:13/) { input("AAA") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected end of input .* 1:14/) { input("AAA+") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected end of input .* 1:15/) { input("AAA+x") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected end of input .* 1:16/) { input("AAA+x:") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected end of input .* 1:17/) { input("AAA+x:y") }
   end
 
   def test_unexpected_component_separator
-    assert_raises_msg(/Unexpected ":" .* 1:10/) { input(":AAA+x'") }
-    assert_raises_msg(/Unexpected ":" .* 1:13/) { input("AAA:'") }
-    assert_raises_msg(/Unexpected ":" .* 1:16/) { input("AAA+x':") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected ":" .* 1:10/) { input(":AAA+x'") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected ":" .* 1:13/) { input("AAA:'") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected ":" .* 1:16/) { input("AAA+x':") }
   end
 
   def test_unexpected_element_separator
-    assert_raises_msg(/Unexpected "\+" .* 1:10/) { input("+AAA+x'") }
-    assert_raises_msg(/Unexpected "\+" .* 1:16/) { input("AAA+x'+") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected "\+" .* 1:10/) { input("+AAA+x'") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected "\+" .* 1:16/) { input("AAA+x'+") }
   end
 
   def test_unexpected_segment_separator
-    assert_raises_msg(/Unexpected "'" .* 1:10/) { input("'AAA+x'") }
-    assert_raises_msg(/Unexpected "'" .* 1:16/) { input("AAA+x''") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected "'" .* 1:10/) { input("'AAA+x'") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected "'" .* 1:16/) { input("AAA+x''") }
   end
 
   def test_next_pos

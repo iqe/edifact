@@ -29,7 +29,7 @@ class SegmentTreeTest < Minitest::Test
       ]
     })
 
-    assert_raises_msg('Invalid segment "DEF" at position 1:10. Expected one of ["ABC"]') { input("DEF'") }
+    assert_raises_msg(Edifact::ParseError, 'Invalid segment "DEF" at position 1:10. Expected one of ["ABC"]') { input("DEF'") }
   end
 
   def test_multiple_possible_segments
@@ -69,7 +69,7 @@ class SegmentTreeTest < Minitest::Test
       ]
     })
 
-    assert_raises_msg('Unexpected end of input. Expected one of ["DEF"]') { input("ABC'") }
+    assert_raises_msg(Edifact::ParseError, 'Unexpected end of input. Expected one of ["DEF"]') { input("ABC'") }
   end
 
   def test_optional_trailing_segment
@@ -264,7 +264,7 @@ class SegmentTreeTest < Minitest::Test
       ]
     })
 
-    assert_raises_msg('Position 1:14: Invalid value "hello". Expected "1234"') { input("ABC+hello'") }
+    assert_raises_msg(Edifact::ParseError, 'Position 1:14: Invalid value "hello". Expected "1234"') { input("ABC+hello'") }
   end
 
   def test_reading_from_array_of_segments

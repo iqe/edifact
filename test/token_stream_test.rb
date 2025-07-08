@@ -11,7 +11,7 @@ class TokenStreamTest < Minitest::Test
   end
 
   def test_empty_input
-    assert_raises_msg(/UNA/) { raw_input("") }
+    assert_raises_msg(Edifact::ParseError, /UNA/) { raw_input("") }
   end
 
   def test_una_header_parsing
@@ -24,7 +24,7 @@ class TokenStreamTest < Minitest::Test
   end
 
   def test_una_header_with_duplicate_characters
-    assert_raises_msg(/UNA/) { raw_input("UNA:+.? +") }
+    assert_raises_msg(Edifact::ParseError, /UNA/) { raw_input("UNA:+.? +") }
   end
 
   def test_empty_element
@@ -52,7 +52,7 @@ class TokenStreamTest < Minitest::Test
   end
 
   def test_escape_character_at_eof
-    assert_raises_msg(/Unexpected end of input .* 1:15/) { input("ABC+?") }
+    assert_raises_msg(Edifact::ParseError, /Unexpected end of input .* 1:15/) { input("ABC+?") }
   end
 
   def test_binary_text_gets_passed_through
