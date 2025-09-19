@@ -41,6 +41,13 @@ module Edifact
       component_values.each_with_index do |component_value, i|
         @column += 1 # element separator (for i == 0) or component separator (for i > 0)
 
+        case component_value
+        when String, Integer
+          component_value = component_value.to_s
+        else
+          raise ArgumentError.new("Invalid component type: #{component_value.class}")
+        end
+
         c = Nodes::Component.new(Position.new(@line, @column), component_value)
 
         i = component_value.rindex("\n")
@@ -70,12 +77,10 @@ module Edifact
         elements = args
         elements.each do |components|
           case components
-          when String
-            self.element(components) # single component
           when Array
             self.element(*components) # multiple components
           else
-            raise ArgumentError.new("Invalid argument type: #{components.class}")
+            self.element(components) # single component
           end
         end
       else

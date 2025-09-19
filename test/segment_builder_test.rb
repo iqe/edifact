@@ -118,14 +118,12 @@ class SegmentBuilderTest < Minitest::Test
   end
 
   def test_method_missing_dsl_for_segments_and_elements
-    @b.ABC("1", "2", "3")
+    @b.ABC("1", "2", 3)
     @b.ABC(["Hello", "World"])
-    @b.GHI("4", ["5", "6"])
+    @b.GHI("4", ["5", 6])
     @b.KLM
 
     assert_equal "UNA:+.? 'ABC+1+2+3'ABC+Hello:World'GHI+4+5:6'KLM'", @b.to_edifact
-
-    assert_raises(ArgumentError) { @b.ABC(1) }
 
     assert_raises(NoMethodError) { @b.abc }
     assert_raises(NoMethodError) { @b.AB }
