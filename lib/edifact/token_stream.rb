@@ -34,7 +34,7 @@ module Edifact
     def initialize(input)
       @input = input
       @peek_buf = []
-      @text_buf = ""
+      @text_buf = []
 
       # Position of the current token
       @token_line = 1
@@ -164,11 +164,11 @@ module Edifact
     end
 
     def text_token
-      text = @text_buf
+      text = @text_buf.join
       text_line = @token_line
       text_column = @token_column
 
-      @text_buf = ""
+      @text_buf = []
       @token_line = @next_line
       @token_column = @next_column
 
