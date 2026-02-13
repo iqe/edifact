@@ -201,7 +201,7 @@ spec = {
 * `"an..20"` - Alphanumeric, up to 20 characters
 * `"n..2"` - Numeric, up to 2 digits
 * `"n3"` - Numeric, exactly 3 digits
-* `"a5"` - Characters [A-Za-z], exactly 5 characters
+* `"a5"` - Alphabetic characters (including Unicode), exactly 5 characters
 * `"somevalue"` - The literal value "somevalue"
 * `/a+/` - Regular expression
 * `["somevalue", "differentvalue", "n3"]` - An array of nested component specifications. Allows to match any of the given specifications.

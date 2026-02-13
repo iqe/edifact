@@ -94,7 +94,7 @@ module Edifact::Validation
       end
 
       def valid?(component)
-        component.text =~ /^[A-Za-z]{#{@length}}$/ # TODO support other characters?
+        component.text =~ /^[[:alpha:]]{#{@length}}$/
       end
     end
 

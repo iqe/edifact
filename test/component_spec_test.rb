@@ -51,6 +51,11 @@ class ComponentSpecTest < Minitest::Test
     assert_invalid("a1", "ab")
     assert_invalid("a2", "a")
     assert_invalid("a1", "")
+
+    assert_valid("a1", "ü")
+    assert_valid("a2", "éñ")
+    assert_valid("a1", "ü".encode("ISO-8859-1")) # UNOC+ messages use ISO 8859 encoding
+    assert_invalid("a1", "1")
   end
 
   def test_hash_for_optional_value
