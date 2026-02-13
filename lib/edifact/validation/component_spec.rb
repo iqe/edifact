@@ -90,11 +90,11 @@ module Edifact::Validation
     # "a5"
     class FixedAlphaValidator
       def initialize(length)
-        @length = length
+        @regex = /^[[:alpha:]]{#{length}}$/
       end
 
       def valid?(component)
-        component.text =~ /^[[:alpha:]]{#{@length}}$/
+        component.text =~ @regex
       end
     end
 
@@ -112,22 +112,22 @@ module Edifact::Validation
     # "n3"
     class FixedNumericValidator
       def initialize(length)
-        @length = length
+        @regex = /^\d{#{length}}$/
       end
 
       def valid?(component)
-        component.text =~ /^\d{#{@length}}$/
+        component.text =~ @regex
       end
     end
 
     # "n..2"
     class VariableNumericValidator
       def initialize(length)
-        @length = length
+        @regex = /^\d{1,#{length}}$/
       end
 
       def valid?(component)
-        component.text =~ /^\d{1,#{@length}}$/
+        component.text =~ @regex
       end
     end
 
